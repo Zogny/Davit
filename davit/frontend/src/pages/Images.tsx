@@ -1,5 +1,17 @@
 import { useState } from 'react'
-import {Search, Tag, Download, OctagonMinus, Trash2, X, ArrowUp, ArrowDown, Gauge, Container} from 'lucide-react'
+import {
+  Search,
+  Tag,
+  Download,
+  OctagonMinus,
+  Trash2,
+  X,
+  ArrowUp,
+  ArrowDown,
+  Gauge,
+  Container,
+  Layers
+} from 'lucide-react'
 import StatCard from '../components/StatCard'
 import ConfirmModal from '../components/ConfirmModal'
 import ImageDetail from './ImageDetail'
@@ -144,7 +156,7 @@ export default function Images() {
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-4">
         <StatCard
-          icon={<Tag size={18} className="text-blue-600" />}
+          icon={<Layers size={18} className="text-blue-600" />}
           iconBg="bg-blue-100"
           title="Total"
           value={MOCK_IMAGES.length}
@@ -251,12 +263,27 @@ export default function Images() {
                   )}
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <button
-                    onClick={e => { e.stopPropagation(); setDeleteTarget(img) }}
-                    className="p-1 rounded text-gray-400 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="relative inline-flex group justify-end">
+                    <button
+                      onClick={e => { e.stopPropagation(); img.containers === 0 && setDeleteTarget(img) }}
+                      disabled={img.containers > 0}
+                      className={`p-1 rounded transition-colors ${
+                        img.containers > 0
+                          ? 'text-gray-200 cursor-not-allowed'
+                          : 'text-gray-400 hover:text-red-500'
+                      }`}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                    {img.containers > 0 && (
+                      <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 hidden group-hover:block z-10 pointer-events-none">
+                        <div className="relative bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
+                          Image utilisée par {img.containers} conteneur{img.containers > 1 ? 's' : ''} actif{img.containers > 1 ? 's' : ''}
+                          <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-gray-900" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

@@ -227,14 +227,13 @@ export default function Volumes() {
           </thead>
           <tbody className="divide-y divide-gray-50">
             {filtered.map(vol => (
-              <tr key={vol.id} className="hover:bg-gray-50 transition-colors">
+              <tr
+                key={vol.id}
+                onClick={() => setSelectedVolume(vol)}
+                className="hover:bg-gray-50 transition-colors cursor-pointer group/row"
+              >
                 <td className="px-6 py-4">
-                  <div
-                    className="flex items-center gap-2.5 cursor-pointer group/name"
-                    onClick={() => setSelectedVolume(vol)}
-                  >
-                    <span className="text-sm font-semibold text-gray-900 group-hover/name:text-blue-600 transition-colors">{vol.name}</span>
-                  </div>
+                  <span className="text-sm font-semibold text-gray-900 group-hover/row:text-blue-600 transition-colors">{vol.name}</span>
                 </td>
                 <td className="px-4 py-4">
                   <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium border border-blue-100">
@@ -274,14 +273,14 @@ export default function Volumes() {
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-1">
                     <button
-                      onClick={() => { setBackupTarget(vol); setBackupPath(`/backups/${vol.name}_${today}.tar.gz`) }}
+                      onClick={e => { e.stopPropagation(); setBackupTarget(vol); setBackupPath(`/backups/${vol.name}_${today}.tar.gz`) }}
                       className="p-1 rounded text-gray-400 hover:text-blue-500 transition-colors"
                     >
                       <Archive size={16} />
                     </button>
                   <div className="relative inline-flex group justify-end">
                     <button
-                      onClick={() => vol.containers === 0 && setDeleteTarget(vol)}
+                      onClick={e => { e.stopPropagation(); vol.containers === 0 && setDeleteTarget(vol) }}
                       disabled={vol.containers > 0}
                       className={`p-1 rounded transition-colors ${
                         vol.containers > 0
