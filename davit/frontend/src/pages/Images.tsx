@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import {Search, Tag, Download, OctagonMinus, Trash2, X, ArrowUp, ArrowDown, Gauge} from 'lucide-react'
+import {Search, Tag, Download, OctagonMinus, Trash2, X, ArrowUp, ArrowDown, Gauge, Container} from 'lucide-react'
 import StatCard from '../components/StatCard'
 import ConfirmModal from '../components/ConfirmModal'
+import ImageDetail from './ImageDetail'
 
 
 interface DockerImage {
@@ -11,19 +12,20 @@ interface DockerImage {
   shortId: string
   size: string
   created: string
-  inUse: boolean
+  containers: number
+  containerNames: string[]
 }
 
-type SortableCol = 'repository' | 'tag' | 'shortId' | 'size' | 'created' | 'inUse'
+type SortableCol = 'repository' | 'tag' | 'shortId' | 'size' | 'created' | 'containers'
 type SortDir = 'asc' | 'desc'
 
 const MOCK_IMAGES: DockerImage[] = [
-  { id: '1', repository: 'nginx',    tag: 'latest',   shortId: 'abc123', size: '142 MB', created: 'Il y a 2 jours',    inUse: true  },
-  { id: '2', repository: 'postgres', tag: '15',        shortId: 'def456', size: '379 MB', created: 'Il y a 5 jours',    inUse: true  },
-  { id: '3', repository: 'redis',    tag: '7-alpine',  shortId: 'gh1789', size: '28 MB',  created: 'Il y a 1 semaine',  inUse: true  },
-  { id: '4', repository: 'node',     tag: '18-alpine', shortId: 'jk1012', size: '167 MB', created: 'Il y a 3 heures',   inUse: true  },
-  { id: '5', repository: 'mongo',    tag: '6',         shortId: 'mno345', size: '693 MB', created: 'Il y a 2 semaines', inUse: false },
-  { id: '6', repository: 'mysql',    tag: '8.0',       shortId: 'pqr678', size: '521 MB', created: 'Il y a 1 mois',     inUse: false },
+  { id: '1', repository: 'nginx',    tag: 'latest',   shortId: 'abc123', size: '142 MB', created: 'Il y a 2 jours',    containers: 2, containerNames: ['nginx_proxy', 'nginx_static'] },
+  { id: '2', repository: 'postgres', tag: '15',        shortId: 'def456', size: '379 MB', created: 'Il y a 5 jours',    containers: 1, containerNames: ['db_primary'] },
+  { id: '3', repository: 'redis',    tag: '7-alpine',  shortId: 'gh1789', size: '28 MB',  created: 'Il y a 1 semaine',  containers: 1, containerNames: ['cache_server'] },
+  { id: '4', repository: 'node',     tag: '18-alpine', shortId: 'jk1012', size: '167 MB', created: 'Il y a 3 heures',   containers: 3, containerNames: ['api_server', 'worker_1', 'worker_2'] },
+  { id: '5', repository: 'mongo',    tag: '6',         shortId: 'mno345', size: '693 MB', created: 'Il y a 2 semaines', containers: 0, containerNames: [] },
+  { id: '6', repository: 'mysql',    tag: '8.0',       shortId: 'pqr678', size: '521 MB', created: 'Il y a 1 mois',     containers: 0, containerNames: [] },
 ]
 
 const TOTAL_SIZE = '1930 MB'
@@ -34,7 +36,7 @@ const COLUMNS: { key: SortableCol; label: string }[] = [
   { key: 'shortId',    label: 'ID' },
   { key: 'size',       label: 'TAILLE' },
   { key: 'created',    label: 'CRÉÉE' },
-  { key: 'inUse',      label: 'STATUT' },
+  { key: 'containers', label: 'CONTENEURS' },
 ]
 
 function parseSize(size: string): number {
@@ -66,8 +68,8 @@ function compareImages(a: DockerImage, b: DockerImage, col: SortableCol, dir: So
   } else if (col === 'created') {
     // asc = most recent first (smallest hours-ago value first)
     result = parseRelativeTime(a.created) - parseRelativeTime(b.created)
-  } else if (col === 'inUse') {
-    result = (a.inUse === b.inUse) ? 0 : a.inUse ? -1 : 1
+  } else if (col === 'containers') {
+    result = a.containers - b.containers
   } else {
     result = (a[col] as string).localeCompare(b[col] as string)
   }
@@ -82,9 +84,10 @@ export default function Images() {
   const [pullOpen, setPullOpen] = useState(false)
   const [pullInput, setPullInput] = useState('')
   const [deleteTarget, setDeleteTarget] = useState<DockerImage | null>(null)
+  const [selectedImage, setSelectedImage] = useState<DockerImage | null>(null)
 
-  const inUseCount = MOCK_IMAGES.filter(i => i.inUse).length
-  const unusedCount = MOCK_IMAGES.filter(i => !i.inUse).length
+  const inUseCount = MOCK_IMAGES.filter(i => i.containers > 0).length
+  const unusedCount = MOCK_IMAGES.filter(i => i.containers === 0).length
 
   function handleSort(col: SortableCol) {
     if (col === sortCol) {
@@ -113,6 +116,10 @@ export default function Images() {
   function closePull() {
     setPullOpen(false)
     setPullInput('')
+  }
+
+  if (selectedImage !== null) {
+    return <ImageDetail image={selectedImage} onBack={() => setSelectedImage(null)} />
   }
 
   return (
@@ -172,7 +179,7 @@ export default function Images() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-100">
@@ -201,8 +208,12 @@ export default function Images() {
           </thead>
           <tbody className="divide-y divide-gray-50">
             {filtered.map(img => (
-              <tr key={img.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 text-sm font-semibold text-gray-900">{img.repository}</td>
+              <tr
+                key={img.id}
+                onClick={() => setSelectedImage(img)}
+                className="hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <td className="px-6 py-4 text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{img.repository}</td>
                 <td className="px-4 py-4">
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium border border-blue-100">
                     <Tag size={11} />
@@ -213,19 +224,35 @@ export default function Images() {
                 <td className="px-4 py-4 text-sm font-semibold text-gray-700">{img.size}</td>
                 <td className="px-4 py-4 text-sm text-gray-500">{img.created}</td>
                 <td className="px-4 py-4">
-                  {img.inUse ? (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">
-                      En utilisation
-                    </span>
+                  {img.containers > 0 ? (
+                    <div className="relative inline-flex group">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100 cursor-default">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                        {img.containers}
+                      </span>
+                      <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block z-20 pointer-events-none">
+                        <div className="bg-gray-900 rounded-lg py-2 shadow-xl w-52">
+                          {img.containerNames.slice(0, 8).map(name => (
+                            <div key={name} className="flex items-center gap-2 px-3 py-1">
+                              <Container size={11} className="text-gray-400 shrink-0" />
+                              <span className="text-white text-xs truncate">{name}</span>
+                            </div>
+                          ))}
+                          {img.containerNames.length > 8 && (
+                            <div className="px-3 py-1 text-gray-400 text-xs">…</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   ) : (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200">
-                      Inutilisée
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-400 text-xs font-semibold border border-gray-200">
+                      0
                     </span>
                   )}
                 </td>
                 <td className="px-6 py-4 text-right">
                   <button
-                    onClick={() => setDeleteTarget(img)}
+                    onClick={e => { e.stopPropagation(); setDeleteTarget(img) }}
                     className="p-1 rounded text-gray-400 hover:text-red-500 transition-colors"
                   >
                     <Trash2 size={16} />
