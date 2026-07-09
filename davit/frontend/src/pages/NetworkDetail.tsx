@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowLeft, Trash2, Plus, Unlink, Container } from 'lucide-react'
 import ConfirmModal from '../components/ConfirmModal'
+import { useTranslation } from '../i18n'
 
 interface NetworkInfo {
   id: string
@@ -66,6 +67,7 @@ function deriveConnections(network: NetworkInfo): ContainerConnection[] {
 }
 
 export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
+  const { t } = useTranslation()
   const meta = MOCK_NETWORK_META[network.id] ?? { createdAt: 'Récemment', ipv6: false, internal: false }
   const [connections, setConnections] = useState<ContainerConnection[]>(() => deriveConnections(network))
   const canDelete = connections.length === 0
@@ -128,17 +130,17 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
       {/* Back */}
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
       >
         <ArrowLeft size={15} />
-        Retour aux réseaux
+        {t('networkDetail.backToNetworks')}
       </button>
 
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{network.name}</h1>
-          <p className="text-gray-500 mt-1 text-sm">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{network.name}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
             {network.driver} • {network.scope}
           </p>
         </div>
@@ -148,11 +150,11 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
           className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors shrink-0 ${
             canDelete
               ? 'bg-red-600 text-white hover:bg-red-700'
-              : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600'
           }`}
         >
           <Trash2 size={15} />
-          Supprimer
+          {t('networkDetail.delete')}
         </button>
       </div>
 
@@ -160,29 +162,29 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
       <div className="grid grid-cols-2 gap-4">
 
         {/* Left: network configuration */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
-          <h2 className="text-sm font-semibold text-gray-800">Configuration réseau</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 flex flex-col gap-4">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('networkDetail.configCard')}</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-28 shrink-0">Driver</span>
-              <span className="text-sm text-gray-800">{network.driver}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-28 shrink-0">{t('networkDetail.driver')}</span>
+              <span className="text-sm text-gray-800 dark:text-gray-200">{network.driver}</span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-28 shrink-0">Scope</span>
-              <span className="text-sm text-gray-800">{network.scope}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-28 shrink-0">{t('networkDetail.scope')}</span>
+              <span className="text-sm text-gray-800 dark:text-gray-200">{network.scope}</span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-28 shrink-0">Subnet</span>
-              <span className="text-sm text-gray-800 font-mono">{network.subnet}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-28 shrink-0">{t('networkDetail.subnet')}</span>
+              <span className="text-sm text-gray-800 dark:text-gray-200 font-mono">{network.subnet}</span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-28 shrink-0">Gateway</span>
-              <span className="text-sm text-gray-800 font-mono">{network.gateway}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-28 shrink-0">{t('networkDetail.gateway')}</span>
+              <span className="text-sm text-gray-800 dark:text-gray-200 font-mono">{network.gateway}</span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-28 shrink-0">ID</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-28 shrink-0">ID</span>
               <div className="relative group min-w-0">
-                <span className="text-xs text-gray-600 font-mono cursor-default">
+                <span className="text-xs text-gray-600 dark:text-gray-400 font-mono cursor-default">
                   {network.id.slice(0, 12)}…
                 </span>
                 <div className="absolute left-0 top-full mt-1 hidden group-hover:block z-10 pointer-events-none">
@@ -194,8 +196,8 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
             </div>
             {meta.composeProject && (
               <div className="flex items-center gap-4">
-                <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-28 shrink-0">Compose</span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium border border-blue-100">
+                <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-28 shrink-0">Compose</span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-medium border border-blue-100 dark:border-blue-800/60">
                   Compose
                   <span className="text-blue-400">•</span>
                   {meta.composeProject}
@@ -206,95 +208,95 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
         </div>
 
         {/* Right: statistics */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
-          <h2 className="text-sm font-semibold text-gray-800">Statistiques</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 flex flex-col gap-4">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('networkDetail.statsCard')}</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-40 shrink-0">Conteneurs connectés</span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-40 shrink-0">{t('networkDetail.connectedContainers')}</span>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-xs font-semibold border border-blue-100 dark:border-blue-800/60">
                 {connections.length}
               </span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-40 shrink-0">Créé</span>
-              <span className="text-sm text-gray-700">{meta.createdAt}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-40 shrink-0">{t('networkDetail.createdLabel')}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{meta.createdAt}</span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-40 shrink-0">IPv6 activé</span>
-              <span className="text-sm text-gray-700">{meta.ipv6 ? 'Oui' : 'Non'}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-40 shrink-0">{t('networkDetail.ipv6Enabled')}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{meta.ipv6 ? t('networkDetail.yes') : t('networkDetail.no')}</span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-40 shrink-0">Réseau interne (isolé)</span>
-              <span className="text-sm text-gray-700">{meta.internal ? 'Oui' : 'Non'}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-40 shrink-0">{t('networkDetail.internalNetwork')}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{meta.internal ? t('networkDetail.yes') : t('networkDetail.no')}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Connected containers */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-gray-800">Conteneurs connectés</h2>
+            <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('networkDetail.connectedContainers')}</h2>
             {connections.length > 0 ? (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-xs font-semibold border border-blue-100 dark:border-blue-800/60">
                 {connections.length}
               </span>
             ) : (
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200">
-                Inutilisé
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-medium border border-gray-200 dark:border-gray-700">
+                {t('networkDetail.unused')}
               </span>
             )}
           </div>
           <button
             onClick={openConnect}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-800/60 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
           >
             <Plus size={14} />
-            Connecter un conteneur
+            {t('networkDetail.connectContainer')}
           </button>
         </div>
 
         {connections.length === 0 ? (
-          <p className="text-sm text-gray-400 px-6 py-6">
-            Aucun conteneur connecté à ce réseau.
+          <p className="text-sm text-gray-400 dark:text-gray-500 px-6 py-6">
+            {t('networkDetail.noContainersConnected')}
           </p>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100">
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">NOM</th>
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">IP</th>
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">ADRESSE MAC</th>
-                <th className="text-right text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">ACTIONS</th>
+              <tr className="border-b border-gray-100 dark:border-gray-700">
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('networkDetail.colName')}</th>
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('networkDetail.colIp')}</th>
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('networkDetail.colMac')}</th>
+                <th className="text-right text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('networkDetail.colActions')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
               {connections.map(c => (
-                <tr key={c.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={c.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
                   <td className="px-6 py-3">
                     <div className="flex items-center gap-2.5">
-                      <Container size={14} className="text-gray-400 shrink-0" />
-                      <span className="text-sm font-medium text-gray-800">{c.name}</span>
+                      <Container size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
+                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{c.name}</span>
                       <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${
                         c.status === 'running'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                          : 'bg-red-50 text-red-600 border border-red-100'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50'
+                          : 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/50'
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${c.status === 'running' ? 'bg-emerald-500' : 'bg-red-400'}`} />
-                        {c.status === 'running' ? 'En cours' : 'Arrêté'}
+                        {c.status === 'running' ? t('containerStatus.running') : t('containerStatus.stopped')}
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700 font-mono">{c.ip}</td>
-                  <td className="px-4 py-3 text-sm text-gray-500 font-mono">{c.mac}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 font-mono">{c.ip}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 font-mono">{c.mac}</td>
                   <td className="px-6 py-3 text-right">
                     <button
                       onClick={() => setDisconnectTarget(c)}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:border-red-200 hover:text-red-600 hover:bg-red-50 transition-colors"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-red-200 dark:hover:border-red-800/60 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                     >
                       <Unlink size={12} />
-                      Déconnecter
+                      {t('networkDetail.disconnect')}
                     </button>
                   </td>
                 </tr>
@@ -309,15 +311,15 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
         onConfirm={() => { setDeleteConfirmOpen(false); onBack() }}
-        title="Supprimer le réseau"
+        title={t('networkDetail.deleteConfirmTitle')}
         description={
           <>
-            Voulez-vous vraiment supprimer le réseau{' '}
-            <span className="font-semibold text-gray-800">{network.name}</span>{' '}
-            ? Cette action est irréversible.
+            {t('networkDetail.deleteConfirmDescBefore')}{' '}
+            <span className="font-semibold text-gray-800 dark:text-gray-200">{network.name}</span>{' '}
+            {t('networkDetail.deleteConfirmDescAfter')}
           </>
         }
-        confirmLabel="Supprimer"
+        confirmLabel={t('common.delete')}
         danger
       />
 
@@ -326,15 +328,13 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
         open={disconnectTarget !== null}
         onClose={() => setDisconnectTarget(null)}
         onConfirm={handleDisconnect}
-        title="Déconnecter le conteneur"
+        title={t('networkDetail.disconnectConfirmTitle')}
         description={disconnectTarget ? (
           <>
-            Déconnecter{' '}
-            <span className="font-semibold text-gray-800">{disconnectTarget.name}</span>{' '}
-            de <span className="font-semibold text-gray-800">{network.name}</span> ?
+            {t('networkDetail.disconnectConfirmDesc', { name: disconnectTarget.name, network: network.name })}
           </>
         ) : null}
-        confirmLabel="Déconnecter"
+        confirmLabel={t('networkDetail.disconnectButton')}
       />
 
       {/* Delete workflow (containers connected) */}
@@ -344,25 +344,25 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
           onClick={() => setDeleteWorkflowOpen(false)}
         >
           <div
-            className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 w-full max-w-md"
             onClick={e => e.stopPropagation()}
           >
-            <h2 className="text-base font-semibold text-gray-900 mb-1">Supprimer le réseau</h2>
-            <p className="text-sm text-gray-500 mb-4">
-              Ce réseau est utilisé par {connections.length} conteneur{connections.length > 1 ? 's' : ''}. Vous devez d'abord les déconnecter avant de pouvoir le supprimer.
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">{t('networkDetail.deleteWorkflowTitle')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              {t('networkDetail.deleteWorkflowDesc', { n: connections.length, s: connections.length > 1 ? 's' : '' })}
             </p>
             <div className="space-y-2 mb-5 max-h-48 overflow-y-auto">
               {connections.map(c => (
-                <div key={c.id} className="flex items-center gap-3 py-2 px-3 rounded-lg bg-gray-50 border border-gray-100">
-                  <Container size={14} className="text-gray-400 shrink-0" />
-                  <span className="text-sm font-medium text-gray-800 flex-1 truncate">{c.name}</span>
+                <div key={c.id} className="flex items-center gap-3 py-2 px-3 rounded-lg bg-gray-50 dark:bg-gray-700/40 border border-gray-100 dark:border-gray-700">
+                  <Container size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
+                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200 flex-1 truncate">{c.name}</span>
                   <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${
                     c.status === 'running'
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                      : 'bg-red-50 text-red-600 border border-red-100'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50'
+                      : 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/50'
                   }`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${c.status === 'running' ? 'bg-emerald-500' : 'bg-red-400'}`} />
-                    {c.status === 'running' ? 'En cours' : 'Arrêté'}
+                    {c.status === 'running' ? t('containerStatus.running') : t('containerStatus.stopped')}
                   </span>
                 </div>
               ))}
@@ -370,15 +370,15 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setDeleteWorkflowOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
-                Annuler
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleDisconnectAllAndDelete}
                 className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
-                Déconnecter tout et supprimer
+                {t('networkDetail.disconnectAllAndDelete')}
               </button>
             </div>
           </div>
@@ -392,39 +392,39 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
           onClick={closeConnect}
         >
           <div
-            className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 w-full max-w-md"
             onClick={e => e.stopPropagation()}
           >
-            <h2 className="text-base font-semibold text-gray-900 mb-4">Connecter un conteneur</h2>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('networkDetail.connectModalTitle')}</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Conteneur</label>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('networkDetail.containerLabel')}</label>
                 {availableContainers.length > 0 ? (
                   <select
                     value={connectName}
                     onChange={e => setConnectName(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     {availableContainers.map(name => (
                       <option key={name} value={name}>{name}</option>
                     ))}
                   </select>
                 ) : (
-                  <p className="text-sm text-gray-400">Tous les conteneurs disponibles sont déjà connectés.</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500">{t('networkDetail.allConnected')}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                  IP spécifique <span className="text-gray-400">(optionnel)</span>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {t('networkDetail.specificIp')} <span className="text-gray-400 dark:text-gray-500">{t('common.optional')}</span>
                 </label>
                 <input
                   type="text"
                   value={connectIp}
                   onChange={e => setConnectIp(e.target.value)}
-                  placeholder="Automatique"
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                  placeholder={t('networkDetail.automatic')}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
                 />
               </div>
             </div>
@@ -432,16 +432,16 @@ export default function NetworkDetail({ network, onBack }: NetworkDetailProps) {
             <div className="flex items-center justify-end gap-2 mt-6">
               <button
                 onClick={closeConnect}
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
-                Annuler
+                {t('common.cancel')}
               </button>
               <button
                 disabled={!connectName}
                 onClick={handleConnect}
                 className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Connecter
+                {t('networkDetail.connectButton')}
               </button>
             </div>
           </div>

@@ -16,6 +16,7 @@ import StatCard from '../components/StatCard'
 import VolumeDetail from './VolumeDetail'
 import ConfirmModal from '../components/ConfirmModal'
 import BackupModal from '../components/BackupModal'
+import { useTranslation } from '../i18n'
 
 interface DockerVolume {
   id: string
@@ -41,13 +42,13 @@ const MOCK_VOLUMES: DockerVolume[] = [
   { id: '7', name: 'elasticsearch_data', driver: 'local', mountPoint: '/var/lib/docker/volumes/elasticsearch_data/_data', size: '3.8 GB', created: 'Il y a 1 semaine',  containers: 2, containerNames: ['elastic_node1', 'elastic_node2'] },
 ]
 
-const COLUMNS: { key: SortableCol; label: string }[] = [
-  { key: 'name',       label: 'NOM' },
-  { key: 'driver',     label: 'DRIVER' },
-  { key: 'mountPoint', label: 'POINT DE MONTAGE' },
-  { key: 'size',       label: 'TAILLE' },
-  { key: 'created',    label: 'CRÉÉ' },
-  { key: 'containers', label: 'CONTENEURS' },
+const COLUMNS: { key: SortableCol; labelKey: string }[] = [
+  { key: 'name',       labelKey: 'volumes.colName' },
+  { key: 'driver',     labelKey: 'volumes.colDriver' },
+  { key: 'mountPoint', labelKey: 'volumes.colMountPoint' },
+  { key: 'size',       labelKey: 'volumes.colSize' },
+  { key: 'created',    labelKey: 'volumes.colCreated' },
+  { key: 'containers', labelKey: 'volumes.colContainers' },
 ]
 
 function parseSize(size: string): number {
@@ -80,6 +81,7 @@ function compareVolumes(a: DockerVolume, b: DockerVolume, col: SortableCol, dir:
 }
 
 export default function Volumes() {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [sortCol, setSortCol] = useState<SortableCol | null>(null)
   const [sortDir, setSortDir] = useState<SortDir | null>(null)
@@ -146,9 +148,9 @@ export default function Volumes() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Volumes</h1>
-          <p className="text-gray-500 mt-1 text-base">
-            {MOCK_VOLUMES.length} volumes • {totalSizeDisplay} au total
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('volumes.title')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 text-base">
+            {t('volumes.subtitle', { n: MOCK_VOLUMES.length, size: totalSizeDisplay })}
           </p>
         </div>
         <button
@@ -156,97 +158,97 @@ export default function Volumes() {
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors shrink-0"
         >
           <Plus size={16} />
-          Créer un volume
+          {t('volumes.create')}
         </button>
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-4">
         <StatCard
-          icon={<Database size={18} className="text-blue-600" />}
-          iconBg="bg-blue-100"
-          title="Total"
+          icon={<Database size={18} className="text-blue-600 dark:text-blue-400" />}
+          iconBg="bg-blue-100 dark:bg-blue-900/40"
+          title={t('volumes.total')}
           value={MOCK_VOLUMES.length}
-          subtitle="volumes disponibles"
+          subtitle={t('volumes.totalSubtitle')}
         />
         <StatCard
-          icon={<Gauge size={18} className="text-emerald-600" />}
-          iconBg="bg-emerald-100"
-          title="En utilisation"
+          icon={<Gauge size={18} className="text-emerald-600 dark:text-emerald-400" />}
+          iconBg="bg-emerald-100 dark:bg-emerald-900/40"
+          title={t('volumes.inUse')}
           value={inUseCount}
-          subtitle="montés sur conteneurs"
+          subtitle={t('volumes.inUseSubtitle')}
         />
         <StatCard
-          icon={<WeightTilde size={18} className="text-orange-500" />}
-          iconBg="bg-orange-100"
-          title="Espace"
+          icon={<WeightTilde size={18} className="text-orange-500 dark:text-orange-400" />}
+          iconBg="bg-orange-100 dark:bg-orange-900/40"
+          title={t('volumes.space')}
           value={totalSizeDisplay}
-          subtitle="espace total utilisé"
+          subtitle={t('volumes.spaceSubtitle')}
         />
       </div>
 
       {/* Search bar */}
       <div className="relative max-w-lg">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" />
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Rechercher un volume..."
-          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder={t('volumes.searchPlaceholder')}
+          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-100">
+            <tr className="border-b border-gray-100 dark:border-gray-700">
               {COLUMNS.map(col => (
                 <th
                   key={col.key}
                   onClick={() => handleSort(col.key)}
                   className="text-left px-4 py-3 first:px-6 select-none cursor-pointer group"
                 >
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-400 tracking-wider group-hover:text-gray-600 transition-colors">
-                    {col.label}
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
+                    {t(col.labelKey)}
                     {sortCol === col.key ? (
                       sortDir === 'asc'
-                        ? <ArrowUp size={12} className="text-blue-500" />
-                        : <ArrowDown size={12} className="text-blue-500" />
+                        ? <ArrowUp size={12} className="text-blue-500 dark:text-blue-400" />
+                        : <ArrowDown size={12} className="text-blue-500 dark:text-blue-400" />
                     ) : (
                       <ArrowUp size={12} className="opacity-0 group-hover:opacity-30 transition-opacity" />
                     )}
                   </span>
                 </th>
               ))}
-              <th className="text-right text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">
-                ACTIONS
+              <th className="text-right text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">
+                {t('volumes.colActions')}
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
             {filtered.map(vol => (
               <tr
                 key={vol.id}
                 onClick={() => setSelectedVolume(vol)}
-                className="hover:bg-gray-50 transition-colors cursor-pointer group/row"
+                className="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors cursor-pointer group/row"
               >
                 <td className="px-6 py-4">
-                  <span className="text-sm font-semibold text-gray-900 group-hover/row:text-blue-600 transition-colors">{vol.name}</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover/row:text-blue-600 dark:group-hover/row:text-blue-400 transition-colors">{vol.name}</span>
                 </td>
                 <td className="px-4 py-4">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium border border-blue-100">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-medium border border-blue-100 dark:border-blue-800/60">
                     {vol.driver}
                   </span>
                 </td>
-                <td className="px-4 py-4 text-sm text-gray-400 font-mono text-xs">{vol.mountPoint}</td>
-                <td className="px-4 py-4 text-sm font-semibold text-gray-700">{vol.size}</td>
-                <td className="px-4 py-4 text-sm text-gray-500">{vol.created}</td>
+                <td className="px-4 py-4 text-sm text-gray-400 dark:text-gray-500 font-mono text-xs">{vol.mountPoint}</td>
+                <td className="px-4 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{vol.size}</td>
+                <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{vol.created}</td>
                 <td className="px-4 py-4">
                   {vol.containers > 0 ? (
                     <div className="relative inline-flex group">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100 cursor-default">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-xs font-semibold border border-blue-100 dark:border-blue-800/60 cursor-default">
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                         {vol.containers}
                       </span>
@@ -254,18 +256,18 @@ export default function Volumes() {
                         <div className="bg-gray-900 rounded-lg py-2 shadow-xl w-52">
                           {vol.containerNames.slice(0, 8).map(name => (
                             <div key={name} className="flex items-center gap-2 px-3 py-1">
-                              <Container size={11} className="text-gray-400 shrink-0" />
+                              <Container size={11} className="text-gray-400 dark:text-gray-500 shrink-0" />
                               <span className="text-white text-xs truncate">{name}</span>
                             </div>
                           ))}
                           {vol.containerNames.length > 8 && (
-                            <div className="px-3 py-1 text-gray-400 text-xs">…</div>
+                            <div className="px-3 py-1 text-gray-400 dark:text-gray-500 text-xs">…</div>
                           )}
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-400 text-xs font-semibold border border-gray-200">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-xs font-semibold border border-gray-200 dark:border-gray-700">
                       0
                     </span>
                   )}
@@ -274,7 +276,7 @@ export default function Volumes() {
                   <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={e => { e.stopPropagation(); setBackupTarget(vol); setBackupPath(`/backups/${vol.name}_${today}.tar.gz`) }}
-                      className="p-1 rounded text-gray-400 hover:text-blue-500 transition-colors"
+                      className="p-1 rounded text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                     >
                       <Archive size={16} />
                     </button>
@@ -284,8 +286,8 @@ export default function Volumes() {
                       disabled={vol.containers > 0}
                       className={`p-1 rounded transition-colors ${
                         vol.containers > 0
-                          ? 'text-gray-200 cursor-not-allowed'
-                          : 'text-gray-400 hover:text-red-500'
+                          ? 'text-gray-200 dark:text-gray-700 cursor-not-allowed'
+                          : 'text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400'
                       }`}
                     >
                       <Trash2 size={16} />
@@ -293,7 +295,7 @@ export default function Volumes() {
                     {vol.containers > 0 && (
                       <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 hidden group-hover:block z-10 pointer-events-none">
                         <div className="relative bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
-                          Volume monté sur {vol.containers} conteneur{vol.containers > 1 ? 's' : ''} actif{vol.containers > 1 ? 's' : ''}
+                          {t('volumes.mountedOnTooltip', { n: vol.containers, s: vol.containers > 1 ? 's' : '' })}
                           <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-gray-900" />
                         </div>
                       </div>
@@ -319,15 +321,15 @@ export default function Volumes() {
         open={deleteTarget !== null}
         onClose={() => setDeleteTarget(null)}
         onConfirm={() => setDeleteTarget(null)}
-        title="Supprimer le volume"
+        title={t('volumes.deleteConfirmTitle')}
         description={deleteTarget ? (
           <>
-            Voulez-vous vraiment supprimer le volume{' '}
-            <span className="font-semibold text-gray-800">{deleteTarget.name}</span>{' '}
-            ? Toutes les données qu'il contient seront perdues.
+            {t('volumes.deleteConfirmDescBefore')}{' '}
+            <span className="font-semibold text-gray-800 dark:text-gray-200">{deleteTarget.name}</span>{' '}
+            {t('volumes.deleteConfirmDescAfter')}
           </>
         ) : null}
-        confirmLabel="Supprimer"
+        confirmLabel={t('common.delete')}
         danger
       />
 
@@ -338,14 +340,14 @@ export default function Volumes() {
           onClick={closeCreate}
         >
           <div
-            className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 w-full max-w-md"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold text-gray-900">Créer un volume</h2>
+              <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('volumes.createModalTitle')}</h2>
               <button
                 onClick={closeCreate}
-                className="p-1 rounded text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-1 rounded text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
               >
                 <X size={18} />
               </button>
@@ -354,31 +356,31 @@ export default function Volumes() {
             <div className="space-y-4">
               {/* Volume name */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                  Nom du volume <span className="text-red-500">*</span>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {t('volumes.nameLabel')} <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={createName}
                   onChange={e => setCreateName(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Escape') closeCreate() }}
-                  placeholder="mon_volume"
+                  placeholder={t('volumes.namePlaceholder')}
                   autoFocus
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               {/* Driver selector */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Driver</label>
-                <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('volumes.driverLabel')}</label>
+                <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden text-sm">
                   <button
                     type="button"
                     onClick={() => setCreateDriver('local')}
                     className={`flex-1 py-2 px-4 font-medium transition-colors ${
                       createDriver === 'local'
                         ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                        : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/40'
                     }`}
                   >
                     Local
@@ -386,13 +388,13 @@ export default function Volumes() {
                   <button
                     type="button"
                     onClick={() => setCreateDriver('cifs')}
-                    className={`flex-1 py-2 px-4 font-medium transition-colors border-l border-gray-200 ${
+                    className={`flex-1 py-2 px-4 font-medium transition-colors border-l border-gray-200 dark:border-gray-700 ${
                       createDriver === 'cifs'
                         ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                        : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/40'
                     }`}
                   >
-                    CIFS (distant)
+                    {t('volumes.cifsRemote')}
                   </button>
                 </div>
               </div>
@@ -400,15 +402,15 @@ export default function Volumes() {
               {/* Local options */}
               {createDriver === 'local' && (
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Emplacement sur la machine <span className="text-gray-400">(optionnel)</span>
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    {t('volumes.localPathLabel')} <span className="text-gray-400 dark:text-gray-500">{t('common.optional')}</span>
                   </label>
                   <input
                     type="text"
                     value={localPath}
                     onChange={e => setLocalPath(e.target.value)}
                     placeholder={`/var/lib/docker/volumes/${createName || 'mon_volume'}/_data`}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
                   />
                 </div>
               )}
@@ -418,68 +420,68 @@ export default function Volumes() {
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                        Hôte <span className="text-red-500">*</span>
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                        {t('volumes.hostLabel')} <span className="text-red-500 dark:text-red-400">*</span>
                       </label>
                       <input
                         type="text"
                         value={cifsHost}
                         onChange={e => setCifsHost(e.target.value)}
                         placeholder="192.168.1.100"
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                        Répertoire partagé <span className="text-red-500">*</span>
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                        {t('volumes.sharedDirLabel')} <span className="text-red-500 dark:text-red-400">*</span>
                       </label>
                       <input
                         type="text"
                         value={cifsShare}
                         onChange={e => setCifsShare(e.target.value)}
-                        placeholder="partage"
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder={t('volumes.sharePlaceholder')}
+                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                        Utilisateur <span className="text-red-500">*</span>
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                        {t('volumes.userLabel')} <span className="text-red-500 dark:text-red-400">*</span>
                       </label>
                       <input
                         type="text"
                         value={cifsUsername}
                         onChange={e => setCifsUsername(e.target.value)}
-                        placeholder="utilisateur"
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder={t('volumes.userPlaceholder')}
+                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                        Mot de passe <span className="text-red-500">*</span>
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                        {t('volumes.passwordLabel')} <span className="text-red-500 dark:text-red-400">*</span>
                       </label>
                       <input
                         type="password"
                         value={cifsPassword}
                         onChange={e => setCifsPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                      Domaine <span className="text-gray-400">(optionnel)</span>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                      {t('volumes.domainLabel')} <span className="text-gray-400 dark:text-gray-500">{t('common.optional')}</span>
                     </label>
                     <input
                       type="text"
                       value={cifsDomain}
                       onChange={e => setCifsDomain(e.target.value)}
                       placeholder="WORKGROUP"
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -489,15 +491,15 @@ export default function Volumes() {
             <div className="flex items-center justify-end gap-2 mt-6">
               <button
                 onClick={closeCreate}
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
-                Annuler
+                {t('common.cancel')}
               </button>
               <button
                 disabled={!isCreateValid}
                 className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Créer
+                {t('volumes.createButton')}
               </button>
             </div>
           </div>

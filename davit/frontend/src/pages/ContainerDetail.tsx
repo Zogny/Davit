@@ -5,6 +5,7 @@ import {
 } from 'lucide-react'
 import ConfirmModal from '../components/ConfirmModal'
 import ContainerStatusBadge, { type ContainerStatus } from '../components/ContainerStatusBadge'
+import { useTranslation } from '../i18n'
 
 type Tab = 'resume' | 'logs' | 'console'
 
@@ -274,6 +275,7 @@ function formatNow(): string {
 }
 
 function LogsPanel({ container }: { container: ContainerSummary }) {
+  const { t } = useTranslation()
   const [lines, setLines] = useState<LogLine[]>(buildInitialLogs)
   const [liveFollow, setLiveFollow] = useState(true)
   const [paused, setPaused] = useState(false)
@@ -359,32 +361,32 @@ function LogsPanel({ container }: { container: ContainerSummary }) {
   return (
     <div className="space-y-3">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+      <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-3">
         <button
           onClick={() => setLiveFollow(v => !v)}
           className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
-            liveFollow ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
+            liveFollow ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/60' : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/40'
           }`}
         >
           <Radio size={12} />
-          Suivi temps réel
+          {t('logsPanel.liveFollow')}
         </button>
         <button
           onClick={togglePause}
           className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
-            paused ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+            paused ? 'bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800/60' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/40'
           }`}
         >
           <Pause size={12} />
-          Pause
+          {t('logsPanel.pause')}
         </button>
 
-        <div className="w-px h-5 bg-gray-200 mx-1" />
+        <div className="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1" />
 
         <button
           onClick={() => setShowStdout(v => !v)}
           className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
-            showStdout ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
+            showStdout ? 'bg-gray-800 text-white border-gray-800' : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/40'
           }`}
         >
           stdout
@@ -392,35 +394,35 @@ function LogsPanel({ container }: { container: ContainerSummary }) {
         <button
           onClick={() => setShowStderr(v => !v)}
           className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
-            showStderr ? 'bg-red-600 text-white border-red-600' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
+            showStderr ? 'bg-red-600 text-white border-red-600' : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/40'
           }`}
         >
           stderr
         </button>
 
         <div className="relative flex-1 min-w-[160px] max-w-xs">
-          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" />
           <input
             type="text"
             value={logSearch}
             onChange={e => setLogSearch(e.target.value)}
-            placeholder="Rechercher dans les logs..."
-            className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder={t('logsPanel.searchPlaceholder')}
+            className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div className="flex items-center gap-2 ml-auto">
-          <button onClick={handleCopyAll} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <button onClick={handleCopyAll} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
             <ClipboardCopy size={12} />
-            Copier tout
+            {t('logsPanel.copyAll')}
           </button>
-          <button onClick={handleExport} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <button onClick={handleExport} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
             <Download size={12} />
-            Exporter
+            {t('logsPanel.export')}
           </button>
-          <button onClick={handleClear} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <button onClick={handleClear} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
             <X size={12} />
-            Vider l'affichage
+            {t('logsPanel.clear')}
           </button>
         </div>
       </div>
@@ -429,24 +431,24 @@ function LogsPanel({ container }: { container: ContainerSummary }) {
       <div className="relative bg-[#1a1a2e] rounded-xl overflow-hidden">
         {paused && (
           <div className="flex items-center justify-between px-4 py-2 bg-orange-500/10 border-b border-orange-500/20">
-            <span className="text-xs text-orange-300">
-              Suivi en pause — {pendingCount} nouvelle{pendingCount > 1 ? 's' : ''} ligne{pendingCount > 1 ? 's' : ''}
+            <span className="text-xs text-orange-300 dark:text-orange-500">
+              {t('logsPanel.pausedBanner', { n: pendingCount, s: pendingCount > 1 ? 's' : '' })}
             </span>
             <button
               onClick={resume}
-              className="text-xs font-medium text-orange-300 hover:text-orange-200 underline underline-offset-2"
+              className="text-xs font-medium text-orange-300 dark:text-orange-500 hover:text-orange-200 underline underline-offset-2"
             >
-              Reprendre
+              {t('logsPanel.resume')}
             </button>
           </div>
         )}
         <div className="p-4 h-96 overflow-y-auto font-mono text-xs leading-relaxed">
           {filtered.length === 0 ? (
-            <p className="text-gray-500">Aucune ligne à afficher.</p>
+            <p className="text-gray-500 dark:text-gray-400">{t('logsPanel.noLines')}</p>
           ) : (
             filtered.map(l => (
               <div key={l.id} className="flex gap-3">
-                <span className="text-gray-500 shrink-0">{l.timestamp}</span>
+                <span className="text-gray-500 dark:text-gray-400 shrink-0">{l.timestamp}</span>
                 <span className={l.stream === 'stderr' ? 'text-red-400' : 'text-gray-100'}>
                   [{l.level}] {l.message}
                 </span>
@@ -461,16 +463,18 @@ function LogsPanel({ container }: { container: ContainerSummary }) {
 }
 
 function ConsolePanel({ status, onStart }: { status: ContainerStatus; onStart: () => void }) {
+  const { t } = useTranslation()
+
   if (status === 'stopped') {
     return (
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-10 flex flex-col items-center gap-4 text-center">
-        <p className="text-sm text-gray-500">Le conteneur est arrêté. Démarrez-le pour accéder à la console.</p>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-10 flex flex-col items-center gap-4 text-center">
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t('containerDetail.stoppedConsoleMsg')}</p>
         <button
           onClick={onStart}
           className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
         >
           <Play size={14} />
-          Démarrer
+          {t('containerActions.start')}
         </button>
       </div>
     )
@@ -478,16 +482,16 @@ function ConsolePanel({ status, onStart }: { status: ContainerStatus; onStart: (
 
   if (status === 'paused') {
     return (
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center">
-        <p className="text-sm text-gray-500">Le conteneur est en pause. Reprenez-le pour accéder à la console.</p>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-10 text-center">
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t('containerDetail.pausedConsoleMsg')}</p>
       </div>
     )
   }
 
   if (status === 'restarting') {
     return (
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center">
-        <p className="text-sm text-gray-500">Le conteneur redémarre. La console sera disponible une fois le redémarrage terminé.</p>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-10 text-center">
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t('containerDetail.restartingConsoleMsg')}</p>
       </div>
     )
   }
@@ -497,12 +501,13 @@ function ConsolePanel({ status, onStart }: { status: ContainerStatus; onStart: (
       <div className="bg-black rounded-xl p-4 h-96 overflow-y-auto font-mono text-sm text-emerald-400">
         <p>/ # <span className="animate-pulse">_</span></p>
       </div>
-      <p className="text-xs text-gray-400">Terminal disponible après connexion au backend</p>
+      <p className="text-xs text-gray-400 dark:text-gray-500">{t('containerDetail.terminalNote')}</p>
     </div>
   )
 }
 
 export default function ContainerDetail({ container, onBack }: ContainerDetailProps) {
+  const { t } = useTranslation()
   const meta = MOCK_CONTAINER_META[container.id] ?? fallbackMeta(container)
   const [status, setStatus] = useState<ContainerStatus>(container.status)
   const [activeTab, setActiveTab] = useState<Tab>('resume')
@@ -537,17 +542,17 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
       <div className="flex items-center gap-2 text-sm">
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-gray-500 hover:text-gray-800 transition-colors"
+          className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
         >
           <ArrowLeft size={15} />
-          Retour aux conteneurs
+          {t('common.backToContainers')}
         </button>
         {meta.composeProject && (
           <>
-            <span className="text-gray-300">/</span>
-            <span className="text-gray-500">{meta.composeProject}</span>
-            <span className="text-gray-300">/</span>
-            <span className="text-gray-800 font-medium">{container.name}</span>
+            <span className="text-gray-300 dark:text-gray-600">/</span>
+            <span className="text-gray-500 dark:text-gray-400">{meta.composeProject}</span>
+            <span className="text-gray-300 dark:text-gray-600">/</span>
+            <span className="text-gray-800 dark:text-gray-200 font-medium">{container.name}</span>
           </>
         )}
       </div>
@@ -555,26 +560,26 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{container.name}</h1>
-          <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
-            <span className="font-mono text-gray-700">{container.image}</span>
-            <span className="text-gray-300">•</span>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{container.name}</h1>
+          <div className="flex items-center gap-2 mt-2 text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-mono text-gray-700 dark:text-gray-300">{container.image}</span>
+            <span className="text-gray-300 dark:text-gray-600">•</span>
             <ContainerStatusBadge status={status} />
-            <span className="text-gray-300">•</span>
-            <span>Créé {meta.createdAt.toLowerCase()}</span>
+            <span className="text-gray-300 dark:text-gray-600">•</span>
+            <span>{t('containerDetail.createdPrefix')} {meta.createdAt.toLowerCase()}</span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           {status === 'restarting' && (
             <div className="relative group">
-              <button disabled className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-lg cursor-not-allowed">
+              <button disabled className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 rounded-lg cursor-not-allowed">
                 <RotateCw size={14} />
-                Redémarrage...
+                {t('containerDetail.restarting')}
               </button>
               <div className="absolute right-0 top-full mt-1 hidden group-hover:block z-20 pointer-events-none">
                 <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
-                  Redémarrage en cours...
+                  {t('containerActions.restartingTooltip')}
                 </div>
               </div>
             </div>
@@ -584,24 +589,24 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
             <>
               <button
                 onClick={() => setStatus('stopped')}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors"
               >
                 <Square size={14} />
-                Arrêter
+                {t('containerActions.stop')}
               </button>
               <button
                 onClick={handleRestart}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors"
               >
                 <RotateCw size={14} />
-                Redémarrer
+                {t('containerActions.restart')}
               </button>
               <button
                 onClick={() => setDeleteConfirmOpen(true)}
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 <Trash2 size={14} />
-                Supprimer
+                {t('common.delete')}
               </button>
             </>
           )}
@@ -613,7 +618,7 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
               >
                 <Play size={14} />
-                Démarrer
+                {t('containerActions.start')}
               </button>
               <div className="relative group">
                 <button
@@ -621,16 +626,16 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
                   onClick={() => meta.composeProject && setStatus('running')}
                   className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border transition-colors ${
                     meta.composeProject
-                      ? 'text-gray-700 bg-white border-gray-200 hover:bg-gray-50'
-                      : 'text-gray-300 bg-gray-50 border-gray-100 cursor-not-allowed'
+                      ? 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/40'
+                      : 'text-gray-300 dark:text-gray-600 bg-gray-50 dark:bg-gray-700/40 border-gray-100 dark:border-gray-700 cursor-not-allowed'
                   }`}
                 >
                   <Zap size={14} />
-                  Démarrer avec dépendances
+                  {t('containerDetail.startWithDepsButton')}
                 </button>
                 <div className="absolute right-0 top-full mt-1 hidden group-hover:block z-20 pointer-events-none">
                   <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
-                    Démarre ce conteneur et ses dépendances dans le bon ordre
+                    {t('containerActions.startWithDeps')}
                   </div>
                 </div>
               </div>
@@ -639,7 +644,7 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 <Trash2 size={14} />
-                Supprimer
+                {t('common.delete')}
               </button>
             </>
           )}
@@ -651,21 +656,21 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
               >
                 <Play size={14} />
-                Reprendre
+                {t('containerActions.resume')}
               </button>
               <button
                 onClick={() => setStatus('stopped')}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors"
               >
                 <Square size={14} />
-                Arrêter
+                {t('containerActions.stop')}
               </button>
               <button
                 onClick={() => setDeleteConfirmOpen(true)}
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 <Trash2 size={14} />
-                Supprimer
+                {t('common.delete')}
               </button>
             </>
           )}
@@ -673,19 +678,19 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 flex items-center gap-6">
+      <div className="border-b border-gray-200 dark:border-gray-700 flex items-center gap-6">
         {([
-          { key: 'resume', label: 'Résumé' },
-          { key: 'logs', label: 'Logs' },
-          { key: 'console', label: 'Console' },
+          { key: 'resume', label: t('containerDetail.tabResume') },
+          { key: 'logs', label: t('containerDetail.tabLogs') },
+          { key: 'console', label: t('containerDetail.tabConsole') },
         ] as { key: Tab; label: string }[]).map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`pb-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
               activeTab === tab.key
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
             }`}
           >
             {tab.label}
@@ -698,74 +703,74 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
           {/* 3 summary cards */}
           <div className="grid grid-cols-3 gap-4">
             {/* Identity */}
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-3">
-              <h2 className="text-sm font-semibold text-gray-800">Identité</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 space-y-3">
+              <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('containerDetail.identityCard')}</h2>
               <div className="space-y-2.5">
                 <div className="flex items-start gap-3">
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">ID</span>
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">ID</span>
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs text-gray-600 font-mono truncate">{meta.fullId.slice(0, 16)}…</span>
-                    <button onClick={handleCopyId} className="p-0.5 rounded text-gray-400 hover:text-blue-600 transition-colors shrink-0">
-                      {copiedId ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                    <span className="text-xs text-gray-600 dark:text-gray-400 font-mono truncate">{meta.fullId.slice(0, 16)}…</span>
+                    <button onClick={handleCopyId} className="p-0.5 rounded text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0">
+                      {copiedId ? <Check size={12} className="text-emerald-600 dark:text-emerald-400" /> : <Copy size={12} />}
                     </button>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Image</span>
-                  <span className="text-sm text-gray-800 font-mono break-all">{container.image}</span>
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('containerDetail.image')}</span>
+                  <span className="text-sm text-gray-800 dark:text-gray-200 font-mono break-all">{container.image}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Restart</span>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 text-xs font-mono border border-gray-200">
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('containerDetail.restart')}</span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-mono border border-gray-200 dark:border-gray-700">
                     {meta.restartPolicy}
                   </span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Commande</span>
-                  <span className="text-xs text-gray-700 font-mono break-all">{meta.command}</span>
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('containerDetail.command')}</span>
+                  <span className="text-xs text-gray-700 dark:text-gray-300 font-mono break-all">{meta.command}</span>
                 </div>
               </div>
             </div>
 
             {/* Resources */}
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-3">
-              <h2 className="text-sm font-semibold text-gray-800">Ressources temps réel</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 space-y-3">
+              <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('containerDetail.resourcesCard')}</h2>
               <div className="space-y-2.5">
                 <div className="flex items-start gap-3">
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">CPU</span>
-                  <span className="text-sm font-semibold text-gray-800">{container.cpu}</span>
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('containerDetail.cpu')}</span>
+                  <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">{container.cpu}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Mémoire</span>
-                  <span className="text-sm text-gray-700">{container.memory} / {meta.memoryLimit}</span>
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('containerDetail.memory')}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{container.memory} / {meta.memoryLimit}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">PIDs</span>
-                  <span className="text-sm text-gray-700">{meta.pids}</span>
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('containerDetail.pids')}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{meta.pids}</span>
                 </div>
               </div>
             </div>
 
             {/* Network */}
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-3">
-              <h2 className="text-sm font-semibold text-gray-800">Réseau</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 space-y-3">
+              <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('containerDetail.networkCard')}</h2>
               <div className="space-y-2.5">
                 <div className="flex items-start gap-3">
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">IP</span>
-                  <span className="text-sm text-gray-800 font-mono">{meta.ip}</span>
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('containerDetail.ip')}</span>
+                  <span className="text-sm text-gray-800 dark:text-gray-200 font-mono">{meta.ip}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Hostname</span>
-                  <span className="text-sm text-gray-800 font-mono">{meta.hostname}</span>
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('containerDetail.hostname')}</span>
+                  <span className="text-sm text-gray-800 dark:text-gray-200 font-mono">{meta.hostname}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Ports</span>
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('containerDetail.ports')}</span>
                   <div className="flex flex-wrap gap-1">
                     {meta.ports.length > 0 ? meta.ports.map(p => (
-                      <span key={`${p.host}-${p.container}`} className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 text-xs font-mono border border-gray-200">
+                      <span key={`${p.host}-${p.container}`} className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-mono border border-gray-200 dark:border-gray-700">
                         {p.host}:{p.container}/{p.protocol}
                       </span>
-                    )) : <span className="text-xs text-gray-400">—</span>}
+                    )) : <span className="text-xs text-gray-400 dark:text-gray-500">—</span>}
                   </div>
                 </div>
               </div>
@@ -773,37 +778,37 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
           </div>
 
           {/* Environment variables */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-            <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
-              <h2 className="text-sm font-semibold text-gray-800">Variables d'environnement</h2>
-              <span className="text-xs text-gray-400">{meta.env.length}</span>
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+            <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('containerDetail.envTitle')}</h2>
+              <span className="text-xs text-gray-400 dark:text-gray-500">{meta.env.length}</span>
             </div>
             {meta.env.length === 0 ? (
-              <p className="text-sm text-gray-400 px-6 py-5">Aucune variable d'environnement définie.</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 px-6 py-5">{t('containerDetail.envEmpty')}</p>
             ) : (
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">CLÉ</th>
-                    <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">VALEUR</th>
+                  <tr className="border-b border-gray-100 dark:border-gray-700">
+                    <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('containerDetail.colKey')}</th>
+                    <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('containerDetail.colValue')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
                   {meta.env.map(e => {
                     const isSensitive = e.sensitive ?? SENSITIVE_PATTERN.test(e.key)
                     const revealed = revealedKeys.has(e.key)
                     return (
                       <tr key={e.key}>
-                        <td className="px-6 py-3 text-sm text-gray-700 font-mono">{e.key}</td>
+                        <td className="px-6 py-3 text-sm text-gray-700 dark:text-gray-300 font-mono">{e.key}</td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-800 font-mono">
+                            <span className="text-sm text-gray-800 dark:text-gray-200 font-mono">
                               {isSensitive && !revealed ? '••••••••' : e.value}
                             </span>
                             {isSensitive && (
                               <button
                                 onClick={() => toggleReveal(e.key)}
-                                className="p-1 rounded text-gray-400 hover:text-gray-700 transition-colors"
+                                className="p-1 rounded text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                               >
                                 {revealed ? <EyeOff size={13} /> : <Eye size={13} />}
                               </button>
@@ -819,32 +824,32 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
           </div>
 
           {/* Volumes */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-            <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
-              <h2 className="text-sm font-semibold text-gray-800">Volumes montés</h2>
-              <span className="text-xs text-gray-400">{meta.volumes.length}</span>
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+            <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('containerDetail.volumesTitle')}</h2>
+              <span className="text-xs text-gray-400 dark:text-gray-500">{meta.volumes.length}</span>
             </div>
             {meta.volumes.length === 0 ? (
-              <p className="text-sm text-gray-400 px-6 py-5">Aucun volume monté.</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 px-6 py-5">{t('containerDetail.volumesEmpty')}</p>
             ) : (
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">SOURCE</th>
-                    <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">DESTINATION</th>
-                    <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">MODE</th>
+                  <tr className="border-b border-gray-100 dark:border-gray-700">
+                    <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('containerDetail.colSource')}</th>
+                    <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('containerDetail.colDestination')}</th>
+                    <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('containerDetail.colMode')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
                   {meta.volumes.map(v => (
                     <tr key={v.destination}>
-                      <td className="px-6 py-3 text-xs text-gray-600 font-mono break-all">{v.source}</td>
-                      <td className="px-4 py-3 text-xs text-gray-600 font-mono break-all">{v.destination}</td>
+                      <td className="px-6 py-3 text-xs text-gray-600 dark:text-gray-400 font-mono break-all">{v.source}</td>
+                      <td className="px-4 py-3 text-xs text-gray-600 dark:text-gray-400 font-mono break-all">{v.destination}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${
                           v.mode === 'rw'
-                            ? 'bg-blue-50 text-blue-600 border-blue-100'
-                            : 'bg-gray-100 text-gray-500 border-gray-200'
+                            ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-800/60'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700'
                         }`}>
                           {v.mode}
                         </span>
@@ -857,29 +862,29 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
           </div>
 
           {/* Networks */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-            <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
-              <h2 className="text-sm font-semibold text-gray-800">Réseaux connectés</h2>
-              <span className="text-xs text-gray-400">{meta.networks.length}</span>
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+            <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('containerDetail.networksTitle')}</h2>
+              <span className="text-xs text-gray-400 dark:text-gray-500">{meta.networks.length}</span>
             </div>
             {meta.networks.length === 0 ? (
-              <p className="text-sm text-gray-400 px-6 py-5">Aucun réseau connecté.</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 px-6 py-5">{t('containerDetail.networksEmpty')}</p>
             ) : (
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">NOM DU RÉSEAU</th>
-                    <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">IP DANS CE RÉSEAU</th>
-                    <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">DRIVER</th>
+                  <tr className="border-b border-gray-100 dark:border-gray-700">
+                    <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('containerDetail.colNetworkName')}</th>
+                    <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('containerDetail.colIpInNetwork')}</th>
+                    <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('containerDetail.colDriver')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
                   {meta.networks.map(n => (
                     <tr key={n.name}>
-                      <td className="px-6 py-3 text-sm font-medium text-gray-800">{n.name}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700 font-mono">{n.ip}</td>
+                      <td className="px-6 py-3 text-sm font-medium text-gray-800 dark:text-gray-200">{n.name}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 font-mono">{n.ip}</td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 text-xs font-medium border border-blue-100">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-medium border border-blue-100 dark:border-blue-800/60">
                           {n.driver}
                         </span>
                       </td>
@@ -902,15 +907,15 @@ export default function ContainerDetail({ container, onBack }: ContainerDetailPr
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
         onConfirm={() => { setDeleteConfirmOpen(false); onBack() }}
-        title="Supprimer le conteneur"
+        title={t('containerDetail.deleteConfirmTitle')}
         description={
           <>
-            Voulez-vous vraiment supprimer le conteneur{' '}
-            <span className="font-semibold text-gray-800">{container.name}</span>{' '}
-            ? Cette action est irréversible.
+            {t('containerDetail.deleteConfirmDescBefore')}{' '}
+            <span className="font-semibold text-gray-800 dark:text-gray-200">{container.name}</span>{' '}
+            {t('containerDetail.deleteConfirmDescAfter')}
           </>
         }
-        confirmLabel="Supprimer"
+        confirmLabel={t('common.delete')}
         danger
       />
     </div>

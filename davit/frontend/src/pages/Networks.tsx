@@ -14,6 +14,7 @@ import {
 import StatCard from '../components/StatCard'
 import ConfirmModal from '../components/ConfirmModal'
 import NetworkDetail from './NetworkDetail'
+import { useTranslation } from '../i18n'
 
 interface DockerNetwork {
   id: string
@@ -38,22 +39,22 @@ const MOCK_NETWORKS: DockerNetwork[] = [
   { id: 'netdef456', name: 'db-network',  driver: 'bridge', scope: 'local', subnet: '172.19.0.0/16', gateway: '172.19.0.1', containers: 3, containerNames: ['postgres_primary', 'postgres_replica', 'pgadmin'], custom: true },
 ]
 
-const COLUMNS: { key: SortableCol; label: string }[] = [
-  { key: 'name',       label: 'NOM' },
-  { key: 'id',         label: 'ID' },
-  { key: 'driver',     label: 'DRIVER' },
-  { key: 'scope',      label: 'SCOPE' },
-  { key: 'subnet',     label: 'SUBNET' },
-  { key: 'gateway',    label: 'GATEWAY' },
-  { key: 'containers', label: 'CONTENEURS' },
+const COLUMNS: { key: SortableCol; labelKey: string }[] = [
+  { key: 'name',       labelKey: 'networks.colName' },
+  { key: 'id',         labelKey: 'networks.colId' },
+  { key: 'driver',     labelKey: 'networks.colDriver' },
+  { key: 'scope',      labelKey: 'networks.colScope' },
+  { key: 'subnet',     labelKey: 'networks.colSubnet' },
+  { key: 'gateway',    labelKey: 'networks.colGateway' },
+  { key: 'containers', labelKey: 'networks.colContainers' },
 ]
 
 const DRIVER_STYLES: Record<string, string> = {
-  bridge: 'bg-blue-50 text-blue-600 border-blue-100',
-  host: 'bg-purple-50 text-purple-600 border-purple-100',
-  null: 'bg-gray-100 text-gray-500 border-gray-200',
-  overlay: 'bg-emerald-50 text-emerald-600 border-emerald-100',
-  macvlan: 'bg-orange-50 text-orange-600 border-orange-100',
+  bridge: 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-800/60',
+  host: 'bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-800/50',
+  null: 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700',
+  overlay: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800/50',
+  macvlan: 'bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-800/50',
 }
 
 function compareNetworks(a: DockerNetwork, b: DockerNetwork, col: SortableCol, dir: SortDir): number {
@@ -67,6 +68,7 @@ function compareNetworks(a: DockerNetwork, b: DockerNetwork, col: SortableCol, d
 }
 
 export default function Networks() {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [sortCol, setSortCol] = useState<SortableCol | null>(null)
   const [sortDir, setSortDir] = useState<SortDir | null>(null)
@@ -117,9 +119,9 @@ export default function Networks() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Réseaux</h1>
-          <p className="text-gray-500 mt-1 text-base">
-            {MOCK_NETWORKS.length} réseaux • {customCount} personnalisés
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('networks.title')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 text-base">
+            {t('networks.subtitle', { n: MOCK_NETWORKS.length, custom: customCount })}
           </p>
         </div>
         <button
@@ -127,98 +129,98 @@ export default function Networks() {
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors shrink-0"
         >
           <Plus size={16} />
-          Créer un réseau
+          {t('networks.create')}
         </button>
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-4">
         <StatCard
-          icon={<Network size={18} className="text-blue-600" />}
-          iconBg="bg-blue-100"
-          title="Total"
+          icon={<Network size={18} className="text-blue-600 dark:text-blue-400" />}
+          iconBg="bg-blue-100 dark:bg-blue-900/40"
+          title={t('networks.total')}
           value={MOCK_NETWORKS.length}
-          subtitle="réseaux configurés"
+          subtitle={t('networks.totalSubtitle')}
         />
         <StatCard
-          icon={<Globe size={18} className="text-purple-600" />}
-          iconBg="bg-purple-100"
-          title="Personnalisés"
+          icon={<Globe size={18} className="text-purple-600 dark:text-purple-400" />}
+          iconBg="bg-purple-100 dark:bg-purple-900/40"
+          title={t('networks.custom')}
           value={customCount}
-          subtitle="créés par l'utilisateur"
+          subtitle={t('networks.customSubtitle')}
         />
         <StatCard
-          icon={<LinkIcon size={18} className="text-emerald-600" />}
-          iconBg="bg-emerald-100"
-          title="Conteneurs"
+          icon={<LinkIcon size={18} className="text-emerald-600 dark:text-emerald-400" />}
+          iconBg="bg-emerald-100 dark:bg-emerald-900/40"
+          title={t('networks.containers')}
           value={totalContainers}
-          subtitle="connectés au total"
+          subtitle={t('networks.containersSubtitle')}
         />
       </div>
 
       {/* Search bar */}
       <div className="relative max-w-lg">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" />
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Rechercher un réseau..."
-          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder={t('networks.searchPlaceholder')}
+          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-100">
+            <tr className="border-b border-gray-100 dark:border-gray-700">
               {COLUMNS.map(col => (
                 <th
                   key={col.key}
                   onClick={() => handleSort(col.key)}
                   className="text-left px-4 py-3 first:px-6 select-none cursor-pointer group"
                 >
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-400 tracking-wider group-hover:text-gray-600 transition-colors">
-                    {col.label}
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
+                    {t(col.labelKey)}
                     {sortCol === col.key ? (
                       sortDir === 'asc'
-                        ? <ArrowUp size={12} className="text-blue-500" />
-                        : <ArrowDown size={12} className="text-blue-500" />
+                        ? <ArrowUp size={12} className="text-blue-500 dark:text-blue-400" />
+                        : <ArrowDown size={12} className="text-blue-500 dark:text-blue-400" />
                     ) : (
                       <ArrowUp size={12} className="opacity-0 group-hover:opacity-30 transition-opacity" />
                     )}
                   </span>
                 </th>
               ))}
-              <th className="text-right text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">
-                ACTIONS
+              <th className="text-right text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">
+                {t('networks.colActions')}
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
             {filtered.map(net => (
               <tr
                 key={net.id}
                 onClick={() => setSelectedNetwork(net)}
-                className="hover:bg-gray-50 transition-colors cursor-pointer group/row"
+                className="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors cursor-pointer group/row"
               >
                 <td className="px-6 py-4">
-                  <span className="text-sm font-semibold text-gray-900 group-hover/row:text-blue-600 transition-colors">{net.name}</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover/row:text-blue-600 dark:group-hover/row:text-blue-400 transition-colors">{net.name}</span>
                 </td>
-                <td className="px-4 py-4 text-sm text-gray-400 font-mono text-xs">{net.id}</td>
+                <td className="px-4 py-4 text-sm text-gray-400 dark:text-gray-500 font-mono text-xs">{net.id}</td>
                 <td className="px-4 py-4">
                   <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border ${DRIVER_STYLES[net.driver] ?? DRIVER_STYLES.null}`}>
                     {net.driver}
                   </span>
                 </td>
-                <td className="px-4 py-4 text-sm text-gray-500">{net.scope}</td>
-                <td className="px-4 py-4 text-sm text-gray-700">{net.subnet}</td>
-                <td className="px-4 py-4 text-sm text-gray-700">{net.gateway}</td>
+                <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{net.scope}</td>
+                <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">{net.subnet}</td>
+                <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">{net.gateway}</td>
                 <td className="px-4 py-4">
                   {net.containers > 0 ? (
                     <div className="relative inline-flex group">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100 cursor-default">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-xs font-semibold border border-blue-100 dark:border-blue-800/60 cursor-default">
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                         {net.containers}
                       </span>
@@ -226,18 +228,18 @@ export default function Networks() {
                         <div className="bg-gray-900 rounded-lg py-2 shadow-xl w-52">
                           {net.containerNames.slice(0, 8).map(name => (
                             <div key={name} className="flex items-center gap-2 px-3 py-1">
-                              <Container size={11} className="text-gray-400 shrink-0" />
+                              <Container size={11} className="text-gray-400 dark:text-gray-500 shrink-0" />
                               <span className="text-white text-xs truncate">{name}</span>
                             </div>
                           ))}
                           {net.containerNames.length > 8 && (
-                            <div className="px-3 py-1 text-gray-400 text-xs">…</div>
+                            <div className="px-3 py-1 text-gray-400 dark:text-gray-500 text-xs">…</div>
                           )}
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-400 text-xs font-semibold border border-gray-200">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-xs font-semibold border border-gray-200 dark:border-gray-700">
                       0
                     </span>
                   )}
@@ -250,8 +252,8 @@ export default function Networks() {
                         disabled={net.containers > 0}
                         className={`p-1 rounded transition-colors ${
                           net.containers > 0
-                            ? 'text-gray-200 cursor-not-allowed'
-                            : 'text-gray-400 hover:text-red-500'
+                            ? 'text-gray-200 dark:text-gray-700 cursor-not-allowed'
+                            : 'text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400'
                         }`}
                       >
                         <Trash2 size={16} />
@@ -259,7 +261,7 @@ export default function Networks() {
                       {net.containers > 0 && (
                         <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 hidden group-hover:block z-10 pointer-events-none">
                           <div className="relative bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
-                            Réseau utilisé par {net.containers} conteneur{net.containers > 1 ? 's' : ''} actif{net.containers > 1 ? 's' : ''}
+                            {t('networks.inUseTooltip', { n: net.containers, s: net.containers > 1 ? 's' : '' })}
                             <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-gray-900" />
                           </div>
                         </div>
@@ -277,15 +279,15 @@ export default function Networks() {
         open={deleteTarget !== null}
         onClose={() => setDeleteTarget(null)}
         onConfirm={() => setDeleteTarget(null)}
-        title="Supprimer le réseau"
+        title={t('networks.deleteConfirmTitle')}
         description={deleteTarget ? (
           <>
-            Voulez-vous vraiment supprimer le réseau{' '}
-            <span className="font-semibold text-gray-800">{deleteTarget.name}</span>{' '}
-            ? Cette action est irréversible.
+            {t('networks.deleteConfirmDescBefore')}{' '}
+            <span className="font-semibold text-gray-800 dark:text-gray-200">{deleteTarget.name}</span>{' '}
+            {t('networks.deleteConfirmDescAfter')}
           </>
         ) : null}
-        confirmLabel="Supprimer"
+        confirmLabel={t('common.delete')}
         danger
       />
 
@@ -296,14 +298,14 @@ export default function Networks() {
           onClick={closeCreate}
         >
           <div
-            className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 w-full max-w-md"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold text-gray-900">Créer un réseau</h2>
+              <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('networks.createModalTitle')}</h2>
               <button
                 onClick={closeCreate}
-                className="p-1 rounded text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-1 rounded text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
               >
                 <X size={18} />
               </button>
@@ -312,33 +314,33 @@ export default function Networks() {
             <div className="space-y-4">
               {/* Network name */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                  Nom du réseau <span className="text-red-500">*</span>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {t('networks.nameLabel')} <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={createName}
                   onChange={e => setCreateName(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Escape') closeCreate() }}
-                  placeholder="mon_reseau"
+                  placeholder={t('networks.namePlaceholder')}
                   autoFocus
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               {/* Driver selector */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Driver</label>
-                <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('networks.driverLabel')}</label>
+                <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden text-sm">
                   {(['bridge', 'overlay'] as const).map(driver => (
                     <button
                       key={driver}
                       type="button"
                       onClick={() => setCreateDriver(driver)}
-                      className={`flex-1 py-2 px-4 font-medium capitalize transition-colors border-l border-gray-200 first:border-l-0 ${
+                      className={`flex-1 py-2 px-4 font-medium capitalize transition-colors border-l border-gray-200 dark:border-gray-700 first:border-l-0 ${
                         createDriver === driver
                           ? 'bg-blue-600 text-white'
-                          : 'bg-white text-gray-600 hover:bg-gray-50'
+                          : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/40'
                       }`}
                     >
                       {driver}
@@ -350,27 +352,27 @@ export default function Networks() {
               {/* Subnet / Gateway */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Subnet <span className="text-gray-400">(optionnel)</span>
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    {t('networks.subnetLabel')} <span className="text-gray-400 dark:text-gray-500">{t('common.optional')}</span>
                   </label>
                   <input
                     type="text"
                     value={createSubnet}
                     onChange={e => setCreateSubnet(e.target.value)}
                     placeholder="172.20.0.0/16"
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Gateway <span className="text-gray-400">(optionnel)</span>
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    {t('networks.gatewayLabel')} <span className="text-gray-400 dark:text-gray-500">{t('common.optional')}</span>
                   </label>
                   <input
                     type="text"
                     value={createGateway}
                     onChange={e => setCreateGateway(e.target.value)}
                     placeholder="172.20.0.1"
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
                   />
                 </div>
               </div>
@@ -379,15 +381,15 @@ export default function Networks() {
             <div className="flex items-center justify-end gap-2 mt-6">
               <button
                 onClick={closeCreate}
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
-                Annuler
+                {t('common.cancel')}
               </button>
               <button
                 disabled={!isCreateValid}
                 className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Créer
+                {t('networks.createButton')}
               </button>
             </div>
           </div>

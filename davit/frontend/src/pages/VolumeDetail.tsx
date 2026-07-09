@@ -5,6 +5,7 @@ import {
 } from 'lucide-react'
 import ConfirmModal from '../components/ConfirmModal'
 import BackupModal from '../components/BackupModal'
+import { useTranslation } from '../i18n'
 
 interface VolumeInfo {
   name: string
@@ -103,12 +104,12 @@ function TreeNode({ node, depth = 0 }: { node: FileNode; depth?: number }) {
 
   if (node.type === 'file') {
     return (
-      <div className="flex items-center gap-2 py-1 rounded hover:bg-gray-50 transition-colors" style={{ paddingLeft: pl }}>
+      <div className="flex items-center gap-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors" style={{ paddingLeft: pl }}>
         <span className="w-3.5 shrink-0" />
-        <File size={13} className="text-gray-400 shrink-0" />
-        <span className="text-sm text-gray-700 flex-1 min-w-0 truncate">{node.name}</span>
-        <span className="text-xs text-gray-400 w-20 text-right shrink-0 pr-4">{node.size ?? '—'}</span>
-        <span className="text-xs text-gray-400 w-36 text-right shrink-0 pr-4">{node.modified ?? '—'}</span>
+        <File size={13} className="text-gray-400 dark:text-gray-500 shrink-0" />
+        <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 min-w-0 truncate">{node.name}</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500 w-20 text-right shrink-0 pr-4">{node.size ?? '—'}</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500 w-36 text-right shrink-0 pr-4">{node.modified ?? '—'}</span>
       </div>
     )
   }
@@ -116,21 +117,21 @@ function TreeNode({ node, depth = 0 }: { node: FileNode; depth?: number }) {
   return (
     <div>
       <div
-        className="flex items-center gap-2 py-1 rounded hover:bg-gray-50 transition-colors cursor-pointer"
+        className="flex items-center gap-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors cursor-pointer"
         style={{ paddingLeft: pl }}
         onClick={() => setExpanded(e => !e)}
       >
         <ChevronRight
           size={13}
-          className={`text-gray-400 shrink-0 transition-transform duration-150 ${expanded ? 'rotate-90' : ''}`}
+          className={`text-gray-400 dark:text-gray-500 shrink-0 transition-transform duration-150 ${expanded ? 'rotate-90' : ''}`}
         />
         {expanded
           ? <FolderOpen size={13} className="text-amber-400 shrink-0" />
           : <Folder size={13} className="text-amber-400 shrink-0" />
         }
-        <span className="text-sm font-medium text-gray-800 flex-1 min-w-0 truncate">{node.name}</span>
-        <span className="text-xs text-gray-400 w-20 text-right shrink-0 pr-4">{node.size ?? '—'}</span>
-        <span className="text-xs text-gray-400 w-36 text-right shrink-0 pr-4">{node.modified ?? '—'}</span>
+        <span className="text-sm font-medium text-gray-800 dark:text-gray-200 flex-1 min-w-0 truncate">{node.name}</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500 w-20 text-right shrink-0 pr-4">{node.size ?? '—'}</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500 w-36 text-right shrink-0 pr-4">{node.modified ?? '—'}</span>
       </div>
       {expanded && (node.children ?? []).map((child, i) => (
         <TreeNode key={i} node={child} depth={depth + 1} />
@@ -140,6 +141,7 @@ function TreeNode({ node, depth = 0 }: { node: FileNode; depth?: number }) {
 }
 
 export default function VolumeDetail({ volume, onBack }: VolumeDetailProps) {
+  const { t } = useTranslation()
   const windowsPath = `\\\\wsl.localhost\\docker-desktop-data\\data\\docker\\volumes\\${volume.name}\\_data`
   const canDelete = volume.containers === 0
 
@@ -156,32 +158,32 @@ export default function VolumeDetail({ volume, onBack }: VolumeDetailProps) {
       {/* Back */}
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
       >
         <ArrowLeft size={15} />
-        Retour aux volumes
+        {t('volumeDetail.backToVolumes')}
       </button>
 
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{volume.name}</h1>
-          <p className="text-gray-400 mt-0.5 text-sm font-mono">{volume.mountPoint}</p>
-          <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
-            <span className="font-semibold text-gray-700">{volume.size}</span>
-            <span className="text-gray-300">•</span>
-            <span>Créé {volume.created.toLowerCase()}</span>
-            <span className="text-gray-300">•</span>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{volume.name}</h1>
+          <p className="text-gray-400 dark:text-gray-500 mt-0.5 text-sm font-mono">{volume.mountPoint}</p>
+          <div className="flex items-center gap-2 mt-2 text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-semibold text-gray-700 dark:text-gray-300">{volume.size}</span>
+            <span className="text-gray-300 dark:text-gray-600">•</span>
+            <span>{t('volumeDetail.createdPrefix')} {volume.created.toLowerCase()}</span>
+            <span className="text-gray-300 dark:text-gray-600">•</span>
             <span>{volume.driver}</span>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => { setBackupPath(defaultBackupPath); setBackupOpen(true) }}
-            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors"
           >
             <Archive size={15} />
-            Backup
+            {t('volumeDetail.backup')}
           </button>
           <button
             disabled={!canDelete}
@@ -189,11 +191,11 @@ export default function VolumeDetail({ volume, onBack }: VolumeDetailProps) {
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${
               canDelete
                 ? 'bg-red-600 text-white hover:bg-red-700'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-gray-700'
             }`}
           >
             <Trash2 size={15} />
-            Supprimer
+            {t('common.delete')}
           </button>
         </div>
       </div>
@@ -202,63 +204,63 @@ export default function VolumeDetail({ volume, onBack }: VolumeDetailProps) {
       <div className="grid grid-cols-2 gap-4">
 
         {/* Left: volume info */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
-          <h2 className="text-sm font-semibold text-gray-800">Informations</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 flex flex-col gap-4">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('volumeDetail.infoCard')}</h2>
           <div className="space-y-3">
             {[
               { label: 'Driver', value: volume.driver, mono: false },
               { label: 'Scope',  value: 'local',       mono: false },
             ].map(row => (
               <div key={row.label} className="flex items-center gap-4">
-                <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-32 shrink-0">{row.label}</span>
-                <span className={`text-sm text-gray-800 ${row.mono ? 'font-mono' : ''}`}>{row.value}</span>
+                <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-32 shrink-0">{row.label}</span>
+                <span className={`text-sm text-gray-800 dark:text-gray-200 ${row.mono ? 'font-mono' : ''}`}>{row.value}</span>
               </div>
             ))}
             <div className="flex items-start gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-32 shrink-0 mt-0.5">Chemin WSL2</span>
-              <span className="text-xs text-gray-600 font-mono break-all leading-relaxed">{volume.mountPoint}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-32 shrink-0 mt-0.5">{t('volumeDetail.wslPath')}</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400 font-mono break-all leading-relaxed">{volume.mountPoint}</span>
             </div>
             <div className="flex items-start gap-4">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-32 shrink-0 mt-0.5">Chemin Windows</span>
-              <span className="text-xs text-gray-600 font-mono break-all leading-relaxed">{windowsPath}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-32 shrink-0 mt-0.5">{t('volumeDetail.windowsPath')}</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400 font-mono break-all leading-relaxed">{windowsPath}</span>
             </div>
           </div>
-          <button className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors mt-auto">
+          <button className="flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-400 transition-colors mt-auto">
             <ExternalLink size={14} />
-            Ouvrir dans l'explorateur
+            {t('volumeDetail.openInExplorer')}
           </button>
         </div>
 
         {/* Right: containers */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
           <div className="flex items-center gap-2 mb-4">
-            <h2 className="text-sm font-semibold text-gray-800">Conteneurs</h2>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
+            <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('volumeDetail.containersCard')}</h2>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-xs font-semibold border border-blue-100 dark:border-blue-800/60">
               {volume.containers}
             </span>
           </div>
           {volume.containers === 0 ? (
-            <p className="text-sm text-gray-400">Aucun conteneur n'utilise ce volume.</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">{t('volumeDetail.noContainers')}</p>
           ) : (
             <div className="space-y-2">
               {volume.containerNames.map(name => {
                 const detail = MOCK_CONTAINER_DETAILS[name] ?? { image: 'unknown', status: 'running' as const }
                 return (
-                  <div key={name} className="flex items-center gap-3 py-2.5 px-3 rounded-lg bg-gray-50 border border-gray-100">
-                    <Container size={14} className="text-gray-400 shrink-0" />
+                  <div key={name} className="flex items-center gap-3 py-2.5 px-3 rounded-lg bg-gray-50 dark:bg-gray-700/40 border border-gray-100 dark:border-gray-700">
+                    <Container size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800 truncate">{name}</p>
-                      <p className="text-xs text-gray-400 truncate">{detail.image}</p>
+                      <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{name}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{detail.image}</p>
                     </div>
                     <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${
                       detail.status === 'running'
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                        : 'bg-red-50 text-red-600 border border-red-100'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50'
+                        : 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/50'
                     }`}>
                       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                         detail.status === 'running' ? 'bg-emerald-500' : 'bg-red-400'
                       }`} />
-                      {detail.status === 'running' ? 'En cours' : 'Arrêté'}
+                      {detail.status === 'running' ? t('containerStatus.running') : t('containerStatus.stopped')}
                     </span>
                   </div>
                 )
@@ -269,15 +271,15 @@ export default function VolumeDetail({ volume, onBack }: VolumeDetailProps) {
       </div>
 
       {/* File tree */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
-          <HardDrive size={15} className="text-gray-400" />
-          <h2 className="text-sm font-semibold text-gray-800">Arborescence</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <HardDrive size={15} className="text-gray-400 dark:text-gray-500" />
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('volumeDetail.fileTree')}</h2>
         </div>
-        <div className="flex items-center px-3 py-2 border-b border-gray-100 bg-gray-50/70">
-          <span className="text-xs font-semibold text-gray-400 tracking-wider flex-1 pl-8">NOM</span>
-          <span className="text-xs font-semibold text-gray-400 tracking-wider w-20 text-right pr-4">TAILLE</span>
-          <span className="text-xs font-semibold text-gray-400 tracking-wider w-36 text-right pr-4">MODIFIÉ</span>
+        <div className="flex items-center px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-700/40">
+          <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider flex-1 pl-8">{t('volumeDetail.colName')}</span>
+          <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider w-20 text-right pr-4">{t('volumeDetail.colSize')}</span>
+          <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider w-36 text-right pr-4">{t('volumeDetail.colModified')}</span>
         </div>
         <div className="px-3 py-2">
           {MOCK_FILE_TREE.map((node, i) => (
@@ -298,15 +300,15 @@ export default function VolumeDetail({ volume, onBack }: VolumeDetailProps) {
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
         onConfirm={() => { setDeleteConfirmOpen(false); onBack() }}
-        title="Supprimer le volume"
+        title={t('volumeDetail.deleteConfirmTitle')}
         description={
           <>
-            Voulez-vous vraiment supprimer le volume{' '}
-            <span className="font-semibold text-gray-800">{volume.name}</span>{' '}
-            ? Toutes les données qu'il contient seront perdues.
+            {t('volumeDetail.deleteConfirmDescBefore')}{' '}
+            <span className="font-semibold text-gray-800 dark:text-gray-200">{volume.name}</span>{' '}
+            {t('volumeDetail.deleteConfirmDescAfter')}
           </>
         }
-        confirmLabel="Supprimer"
+        confirmLabel={t('common.delete')}
         danger
       />
 

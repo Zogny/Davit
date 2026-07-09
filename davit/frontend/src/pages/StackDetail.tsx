@@ -4,6 +4,7 @@ import ContainerStatusBadge, { type ContainerStatus } from '../components/Contai
 import ContainerActions from '../components/ContainerActions'
 import VolumeDetail from './VolumeDetail'
 import NetworkDetail from './NetworkDetail'
+import { useTranslation } from '../i18n'
 
 interface StackContainer {
   id: string
@@ -119,6 +120,7 @@ function deriveGateway(subnet: string): string {
 }
 
 export default function StackDetail({ projectName, onBack, onOpenContainer }: StackDetailProps) {
+  const { t } = useTranslation()
   const stack = MOCK_STACKS[projectName] ?? EMPTY_STACK
 
   const [selectedVolume, setSelectedVolume] = useState<StackVolume | null>(null)
@@ -185,18 +187,18 @@ export default function StackDetail({ projectName, onBack, onOpenContainer }: St
       {/* Back */}
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
       >
         <ArrowLeft size={15} />
-        Retour aux conteneurs
+        {t('common.backToContainers')}
       </button>
 
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{projectName}</h1>
-          <p className="text-gray-500 mt-1 text-base">
-            {totalCount} conteneurs • {runningCount} actifs • {stoppedCount} arrêtés
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{projectName}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 text-base">
+            {t('stackDetail.subtitle', { total: totalCount, running: runningCount, stopped: stoppedCount })}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -204,126 +206,126 @@ export default function StackDetail({ projectName, onBack, onOpenContainer }: St
             disabled={allRunning}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border transition-colors ${
               allRunning
-                ? 'text-gray-300 bg-gray-50 border-gray-100 cursor-not-allowed'
-                : 'text-gray-700 bg-white border-gray-200 hover:bg-gray-50'
+                ? 'text-gray-300 dark:text-gray-600 bg-gray-50 dark:bg-gray-700/40 border-gray-100 dark:border-gray-700 cursor-not-allowed'
+                : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/40'
             }`}
           >
             <Play size={14} />
-            Démarrer tout
+            {t('stackDetail.startAll')}
           </button>
           <button
             disabled={allStopped}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border transition-colors ${
               allStopped
-                ? 'text-gray-300 bg-gray-50 border-gray-100 cursor-not-allowed'
-                : 'text-gray-700 bg-white border-gray-200 hover:bg-gray-50'
+                ? 'text-gray-300 dark:text-gray-600 bg-gray-50 dark:bg-gray-700/40 border-gray-100 dark:border-gray-700 cursor-not-allowed'
+                : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/40'
             }`}
           >
             <Square size={14} />
-            Arrêter tout
+            {t('stackDetail.stopAll')}
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
             <RotateCw size={14} />
-            Redémarrer tout
+            {t('stackDetail.restartAll')}
           </button>
           <button
             onClick={() => setDeleteStackOpen(true)}
             className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
             <Trash2 size={14} />
-            Supprimer la stack
+            {t('stackDetail.deleteStack')}
           </button>
         </div>
       </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-gray-800">Conteneurs</h2>
-          <p className="text-3xl font-bold text-gray-900">{totalCount}</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('stackDetail.cardContainers')}</h2>
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{totalCount}</p>
           <div className="space-y-1.5 pt-1">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">En cours</span>
-              <span className="font-semibold text-emerald-600">{runningCount}</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('stackDetail.running')}</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">{runningCount}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Arrêtés</span>
-              <span className="font-semibold text-red-600">{stoppedCount}</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('stackDetail.stopped')}</span>
+              <span className="font-semibold text-red-600 dark:text-red-400">{stoppedCount}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">En pause</span>
-              <span className="font-semibold text-orange-600">{pausedCount}</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('stackDetail.paused')}</span>
+              <span className="font-semibold text-orange-600 dark:text-orange-400">{pausedCount}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-gray-800">Ressources cumulées</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('stackDetail.cardResources')}</h2>
           <div className="space-y-2.5">
             <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">CPU total</p>
-              <p className="text-2xl font-bold text-gray-900 mt-0.5">{cpuTotal.toFixed(1)}%</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">{t('stackDetail.cpuTotal')}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-0.5">{cpuTotal.toFixed(1)}%</p>
             </div>
             <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Mémoire totale</p>
-              <p className="text-2xl font-bold text-gray-900 mt-0.5">{formatMemory(memTotal)}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">{t('stackDetail.memoryTotal')}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-0.5">{formatMemory(memTotal)}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-gray-800">Composition</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('stackDetail.cardComposition')}</h2>
           <div className="space-y-2.5">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Volumes</span>
-              <span className="font-semibold text-gray-800">{stack.volumes.length}</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('stackDetail.volumesLabel')}</span>
+              <span className="font-semibold text-gray-800 dark:text-gray-200">{stack.volumes.length}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Réseaux</span>
-              <span className="font-semibold text-gray-800">{stack.networks.length}</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('stackDetail.networksLabel')}</span>
+              <span className="font-semibold text-gray-800 dark:text-gray-200">{stack.networks.length}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Créé</span>
-              <span className="font-semibold text-gray-800">{stack.createdAt}</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('stackDetail.createdLabel')}</span>
+              <span className="font-semibold text-gray-800 dark:text-gray-200">{stack.createdAt}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Containers */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-800">Conteneurs</h2>
-          <span className="text-xs text-gray-400">{totalCount}</span>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('stackDetail.containersSection')}</h2>
+          <span className="text-xs text-gray-400 dark:text-gray-500">{totalCount}</span>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-100">
-              <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">CONTENEUR</th>
-              <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">IMAGE</th>
-              <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">STATUT</th>
-              <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">CPU</th>
-              <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">MÉMOIRE</th>
-              <th className="text-right text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">ACTIONS</th>
+            <tr className="border-b border-gray-100 dark:border-gray-700">
+              <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('containers.colContainer')}</th>
+              <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('containers.colImage')}</th>
+              <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('containers.colStatus')}</th>
+              <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('containers.colCpu')}</th>
+              <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('containers.colMemory')}</th>
+              <th className="text-right text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('containers.colActions')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
             {orderedContainers.map(c => {
               const depth = depths.get(c.name) ?? 0
               return (
-                <tr key={c.id} className={`hover:bg-gray-50 transition-colors ${c.status === 'paused' ? 'opacity-70' : ''}`}>
+                <tr key={c.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors ${c.status === 'paused' ? 'opacity-70' : ''}`}>
                   <td className="py-4 px-6" style={{ paddingLeft: `${24 + depth * 20}px` }}>
                     <button
                       onClick={() => onOpenContainer(c)}
-                      className="text-sm font-semibold text-blue-600 hover:underline"
+                      className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       {c.name}
                     </button>
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-700">{c.image}</td>
+                  <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">{c.image}</td>
                   <td className="px-4 py-4"><ContainerStatusBadge status={c.status} /></td>
-                  <td className="px-4 py-4 text-sm text-gray-700 tabular-nums">{c.cpu}</td>
-                  <td className="px-4 py-4 text-sm text-gray-700 tabular-nums">{c.memory}</td>
+                  <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 tabular-nums">{c.cpu}</td>
+                  <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 tabular-nums">{c.memory}</td>
                   <td className="px-6 py-4">
                     <ContainerActions containerId={c.id} status={c.status} inGroup />
                   </td>
@@ -335,48 +337,48 @@ export default function StackDetail({ projectName, onBack, onOpenContainer }: St
       </div>
 
       {/* Volumes */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-800">Volumes</h2>
-          <span className="text-xs text-gray-400">{stack.volumes.length}</span>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('stackDetail.volumesSection')}</h2>
+          <span className="text-xs text-gray-400 dark:text-gray-500">{stack.volumes.length}</span>
         </div>
         {stack.volumes.length === 0 ? (
-          <p className="text-sm text-gray-400 px-6 py-5">Aucun volume utilisé par cette stack.</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 px-6 py-5">{t('stackDetail.noVolumes')}</p>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100">
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">NOM</th>
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">DRIVER</th>
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">TAILLE</th>
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">UTILISÉ PAR</th>
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">STATUT</th>
+              <tr className="border-b border-gray-100 dark:border-gray-700">
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('stackDetail.colName')}</th>
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('stackDetail.colDriver')}</th>
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('stackDetail.colSize')}</th>
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('stackDetail.colUsedBy')}</th>
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('stackDetail.colStatus')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
               {stack.volumes.map(v => (
                 <tr key={v.name}>
                   <td className="px-6 py-3">
-                    <button onClick={() => setSelectedVolume(v)} className="text-sm font-semibold text-blue-600 hover:underline">
+                    <button onClick={() => setSelectedVolume(v)} className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                       {v.name}
                     </button>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 text-xs font-medium border border-blue-100">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-medium border border-blue-100 dark:border-blue-800/60">
                       {v.driver}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{v.size}</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{v.usedBy.join(', ') || '—'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{v.size}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{v.usedBy.join(', ') || '—'}</td>
                   <td className="px-6 py-3">
                     {v.usedBy.length > 0 ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-xs font-semibold border border-blue-100 dark:border-blue-800/60">
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
-                        En utilisation
+                        {t('stackDetail.inUse')}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-400 text-xs font-semibold border border-gray-200">
-                        Inutilisé
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-xs font-semibold border border-gray-200 dark:border-gray-700">
+                        {t('stackDetail.unused')}
                       </span>
                     )}
                   </td>
@@ -388,38 +390,38 @@ export default function StackDetail({ projectName, onBack, onOpenContainer }: St
       </div>
 
       {/* Networks */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-800">Réseaux</h2>
-          <span className="text-xs text-gray-400">{stack.networks.length}</span>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('stackDetail.networksSection')}</h2>
+          <span className="text-xs text-gray-400 dark:text-gray-500">{stack.networks.length}</span>
         </div>
         {stack.networks.length === 0 ? (
-          <p className="text-sm text-gray-400 px-6 py-5">Aucun réseau utilisé par cette stack.</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 px-6 py-5">{t('stackDetail.noNetworks')}</p>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100">
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">NOM</th>
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">DRIVER</th>
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-4 py-3">SUBNET</th>
-                <th className="text-left text-xs font-semibold text-gray-400 tracking-wider px-6 py-3">CONTENEURS CONNECTÉS</th>
+              <tr className="border-b border-gray-100 dark:border-gray-700">
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('stackDetail.colName')}</th>
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('stackDetail.colDriver')}</th>
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-4 py-3">{t('stackDetail.colSubnet')}</th>
+                <th className="text-left text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider px-6 py-3">{t('stackDetail.colConnectedContainers')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
               {stack.networks.map(n => (
                 <tr key={n.name}>
                   <td className="px-6 py-3">
-                    <button onClick={() => setSelectedNetwork(n)} className="text-sm font-semibold text-blue-600 hover:underline">
+                    <button onClick={() => setSelectedNetwork(n)} className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                       {n.name}
                     </button>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 text-xs font-medium border border-blue-100">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-medium border border-blue-100 dark:border-blue-800/60">
                       {n.driver}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700 font-mono">{n.subnet}</td>
-                  <td className="px-6 py-3 text-sm text-gray-500">{n.containers.join(', ') || '—'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 font-mono">{n.subnet}</td>
+                  <td className="px-6 py-3 text-sm text-gray-500 dark:text-gray-400">{n.containers.join(', ') || '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -434,50 +436,50 @@ export default function StackDetail({ projectName, onBack, onOpenContainer }: St
           onClick={() => setDeleteStackOpen(false)}
         >
           <div
-            className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 w-full max-w-md"
             onClick={e => e.stopPropagation()}
           >
-            <h2 className="text-base font-semibold text-gray-900 mb-1">Supprimer la stack {projectName} ?</h2>
-            <p className="text-sm text-gray-500 mb-4">Les ressources suivantes seront supprimées :</p>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">{t('stackDetail.deleteConfirmTitle', { name: projectName })}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('stackDetail.deleteConfirmDesc')}</p>
 
-            <div className="flex items-center gap-2 text-sm text-gray-700 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 mb-4">
-              <Package size={14} className="text-gray-400" />
-              {totalCount} conteneur{totalCount > 1 ? 's' : ''}
+            <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/40 border border-gray-100 dark:border-gray-700 rounded-lg px-3 py-2 mb-4">
+              <Package size={14} className="text-gray-400 dark:text-gray-500" />
+              {t('stackDetail.containerCount', { n: totalCount, s: totalCount > 1 ? 's' : '' })}
             </div>
 
             <div className="space-y-2.5 mb-5">
-              <label className="flex items-center gap-2.5 text-sm text-gray-700 cursor-pointer">
+              <label className="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={deleteVolumesToo}
                   onChange={e => setDeleteVolumesToo(e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 dark:text-blue-400 focus:ring-blue-500"
                 />
-                Supprimer aussi les volumes associés ({stack.volumes.length})
+                {t('stackDetail.deleteVolumesCheckbox', { n: stack.volumes.length })}
               </label>
-              <label className="flex items-center gap-2.5 text-sm text-gray-700 cursor-pointer">
+              <label className="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={deleteNetworksToo}
                   onChange={e => setDeleteNetworksToo(e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 dark:text-blue-400 focus:ring-blue-500"
                 />
-                Supprimer aussi les réseaux associés ({stack.networks.length})
+                {t('stackDetail.deleteNetworksCheckbox', { n: stack.networks.length })}
               </label>
             </div>
 
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setDeleteStackOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
-                Annuler
+                {t('common.cancel')}
               </button>
               <button
                 onClick={() => { setDeleteStackOpen(false); onBack() }}
                 className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
-                Supprimer
+                {t('common.delete')}
               </button>
             </div>
           </div>

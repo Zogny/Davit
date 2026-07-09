@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowLeft, Trash2, Play, Container } from 'lucide-react'
 import ConfirmModal from '../components/ConfirmModal'
+import { useTranslation } from '../i18n'
 
 interface ImageInfo {
   id: string
@@ -57,6 +58,7 @@ function formatLayerSize(bytes: number): string {
 }
 
 export default function ImageDetail({ image, onBack }: ImageDetailProps) {
+  const { t } = useTranslation()
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const canDelete = image.containers === 0
   const maxLayerSize = Math.max(...MOCK_LAYERS.map(l => l.size))
@@ -67,31 +69,31 @@ export default function ImageDetail({ image, onBack }: ImageDetailProps) {
       {/* Back */}
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
       >
         <ArrowLeft size={15} />
-        Retour aux images
+        {t('imageDetail.backToImages')}
       </button>
 
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{image.repository}:{image.tag}</h1>
-          <p className="text-gray-400 mt-0.5 text-sm font-mono">{image.shortId}</p>
-          <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{image.repository}:{image.tag}</h1>
+          <p className="text-gray-400 dark:text-gray-500 mt-0.5 text-sm font-mono">{image.shortId}</p>
+          <div className="flex items-center gap-2 mt-2 text-sm text-gray-500 dark:text-gray-400">
             <span>{MOCK_ARCHITECTURE}</span>
-            <span className="text-gray-300">•</span>
+            <span className="text-gray-300 dark:text-gray-600">•</span>
             <span>{MOCK_OS}</span>
-            <span className="text-gray-300">•</span>
-            <span className="font-semibold text-gray-700">{image.size}</span>
-            <span className="text-gray-300">•</span>
-            <span>Créée {image.created.toLowerCase()}</span>
+            <span className="text-gray-300 dark:text-gray-600">•</span>
+            <span className="font-semibold text-gray-700 dark:text-gray-300">{image.size}</span>
+            <span className="text-gray-300 dark:text-gray-600">•</span>
+            <span>{t('imageDetail.createdPrefix')} {image.created.toLowerCase()}</span>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             <Play size={14} />
-            Créer un conteneur
+            {t('imageDetail.createContainer')}
           </button>
           <button
             disabled={!canDelete}
@@ -99,11 +101,11 @@ export default function ImageDetail({ image, onBack }: ImageDetailProps) {
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${
               canDelete
                 ? 'bg-red-600 text-white hover:bg-red-700'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-gray-700'
             }`}
           >
             <Trash2 size={15} />
-            Supprimer
+            {t('common.delete')}
           </button>
         </div>
       </div>
@@ -112,23 +114,23 @@ export default function ImageDetail({ image, onBack }: ImageDetailProps) {
       <div className="grid grid-cols-3 gap-4">
 
         {/* Identity */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-gray-800">Identité</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('imageDetail.identityCard')}</h2>
           <div className="space-y-2.5">
             <div className="flex items-start gap-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Repository</span>
-              <span className="text-sm text-gray-800 break-all">{image.repository}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('imageDetail.repository')}</span>
+              <span className="text-sm text-gray-800 dark:text-gray-200 break-all">{image.repository}</span>
             </div>
             <div className="flex items-start gap-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Tag</span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 text-xs font-medium border border-blue-100">
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('imageDetail.tag')}</span>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-medium border border-blue-100 dark:border-blue-800/60">
                 {image.tag}
               </span>
             </div>
             <div className="flex items-start gap-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Digest</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('imageDetail.digest')}</span>
               <div className="relative group min-w-0">
-                <span className="text-xs text-gray-600 font-mono cursor-default">
+                <span className="text-xs text-gray-600 dark:text-gray-400 font-mono cursor-default">
                   {MOCK_DIGEST.slice(0, 19)}…
                 </span>
                 <div className="absolute left-0 top-full mt-1 hidden group-hover:block z-10 pointer-events-none">
@@ -139,56 +141,56 @@ export default function ImageDetail({ image, onBack }: ImageDetailProps) {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Arch / OS</span>
-              <span className="text-sm text-gray-700 font-mono">{MOCK_ARCHITECTURE} / {MOCK_OS}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('imageDetail.archOs')}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300 font-mono">{MOCK_ARCHITECTURE} / {MOCK_OS}</span>
             </div>
           </div>
         </div>
 
         {/* Size */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-gray-800">Taille</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('imageDetail.sizeCard')}</h2>
           <div className="space-y-2.5">
             <div className="flex items-start gap-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Total</span>
-              <span className="text-sm font-semibold text-gray-800">{image.size}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('imageDetail.total')}</span>
+              <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">{image.size}</span>
             </div>
             <div className="flex items-start gap-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Layers</span>
-              <span className="text-sm text-gray-700">{MOCK_LAYERS.length} layers</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('imageDetail.layers')}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{t('imageDetail.layersCount', { n: MOCK_LAYERS.length })}</span>
             </div>
             <div className="flex items-start gap-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Créée</span>
-              <span className="text-sm text-gray-700">{image.created}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('imageDetail.created')}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{image.created}</span>
             </div>
           </div>
         </div>
 
         {/* Config */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-gray-800">Configuration</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('imageDetail.configCard')}</h2>
           <div className="space-y-2.5">
             <div className="flex items-start gap-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Ports</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('imageDetail.ports')}</span>
               <div className="flex flex-wrap gap-1">
                 {MOCK_PORTS.length > 0 ? MOCK_PORTS.map(p => (
-                  <span key={p} className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 text-xs font-mono border border-gray-200">
+                  <span key={p} className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-mono border border-gray-200 dark:border-gray-700">
                     {p}
                   </span>
-                )) : <span className="text-xs text-gray-400">—</span>}
+                )) : <span className="text-xs text-gray-400 dark:text-gray-500">—</span>}
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">Volumes</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('imageDetail.volumes')}</span>
               <div className="flex flex-col gap-1">
                 {MOCK_DECLARED_VOLUMES.length > 0 ? MOCK_DECLARED_VOLUMES.map(v => (
-                  <span key={v} className="text-xs text-gray-700 font-mono">{v}</span>
-                )) : <span className="text-xs text-gray-400">—</span>}
+                  <span key={v} className="text-xs text-gray-700 dark:text-gray-300 font-mono">{v}</span>
+                )) : <span className="text-xs text-gray-400 dark:text-gray-500">—</span>}
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide w-24 shrink-0 mt-0.5">CMD</span>
-              <span className="text-xs text-gray-700 font-mono break-all">{MOCK_CMD}</span>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide w-24 shrink-0 mt-0.5">{t('imageDetail.cmd')}</span>
+              <span className="text-xs text-gray-700 dark:text-gray-300 font-mono break-all">{MOCK_CMD}</span>
             </div>
           </div>
         </div>
@@ -196,36 +198,36 @@ export default function ImageDetail({ image, onBack }: ImageDetailProps) {
       </div>
 
       {/* Used by */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
         <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-sm font-semibold text-gray-800">Utilisée par</h2>
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('imageDetail.usedBy')}</h2>
           {image.containers > 0 ? (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-xs font-semibold border border-blue-100 dark:border-blue-800/60">
               {MOCK_CONTAINERS.length}
             </span>
           ) : (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200">
-              Inutilisée
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-medium border border-gray-200 dark:border-gray-700">
+              {t('imageDetail.unused')}
             </span>
           )}
         </div>
         {image.containers === 0 ? (
-          <p className="text-sm text-gray-400">
-            Cette image n'est utilisée par aucun conteneur. Elle peut être supprimée.
+          <p className="text-sm text-gray-400 dark:text-gray-500">
+            {t('imageDetail.unusedMessage')}
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-2">
             {MOCK_CONTAINERS.map(c => (
-              <div key={c.name} className="flex items-center gap-3 py-2.5 px-3 rounded-lg bg-gray-50 border border-gray-100">
-                <Container size={14} className="text-gray-400 shrink-0" />
-                <span className="text-sm font-medium text-gray-800 flex-1 truncate">{c.name}</span>
+              <div key={c.name} className="flex items-center gap-3 py-2.5 px-3 rounded-lg bg-gray-50 dark:bg-gray-700/40 border border-gray-100 dark:border-gray-700">
+                <Container size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200 flex-1 truncate">{c.name}</span>
                 <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${
                   c.status === 'running'
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                    : 'bg-red-50 text-red-600 border border-red-100'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50'
+                    : 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/50'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${c.status === 'running' ? 'bg-emerald-500' : 'bg-red-400'}`} />
-                  {c.status === 'running' ? 'En cours' : 'Arrêté'}
+                  {c.status === 'running' ? t('containerStatus.running') : t('containerStatus.stopped')}
                 </span>
               </div>
             ))}
@@ -234,26 +236,26 @@ export default function ImageDetail({ image, onBack }: ImageDetailProps) {
       </div>
 
       {/* Layers */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-800">Layers</h2>
-          <span className="text-xs text-gray-400">{MOCK_LAYERS.length} layers</span>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('imageDetail.layers')}</h2>
+          <span className="text-xs text-gray-400 dark:text-gray-500">{t('imageDetail.layersCount', { n: MOCK_LAYERS.length })}</span>
         </div>
-        <div className="flex items-center px-4 py-2 border-b border-gray-100 bg-gray-50/70">
-          <span className="text-xs font-semibold text-gray-400 tracking-wider w-10 shrink-0">#</span>
-          <span className="text-xs font-semibold text-gray-400 tracking-wider flex-1">COMMANDE</span>
-          <span className="text-xs font-semibold text-gray-400 tracking-wider w-24 text-right pr-4">TAILLE</span>
-          <span className="text-xs font-semibold text-gray-400 tracking-wider w-40">POIDS RELATIF</span>
+        <div className="flex items-center px-4 py-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-700/40">
+          <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider w-10 shrink-0">{t('imageDetail.colNumber')}</span>
+          <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider flex-1">{t('imageDetail.colCommand')}</span>
+          <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider w-24 text-right pr-4">{t('imageDetail.colSize')}</span>
+          <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider w-40">{t('imageDetail.colRelativeWeight')}</span>
         </div>
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-gray-50 dark:divide-gray-700/50">
           {MOCK_LAYERS.map((layer, i) => {
             const barPct = maxLayerSize > 0 ? (layer.size / maxLayerSize) * 100 : 0
             const truncated = layer.command.length > 80
             return (
               <div key={i} className="flex items-center gap-2 px-4 py-3 group/layer">
-                <span className="text-xs font-mono text-gray-400 w-10 shrink-0">#{i + 1}</span>
+                <span className="text-xs font-mono text-gray-400 dark:text-gray-500 w-10 shrink-0">#{i + 1}</span>
                 <div className="flex-1 min-w-0 relative">
-                  <span className="text-xs font-mono text-gray-700 truncate block cursor-default">
+                  <span className="text-xs font-mono text-gray-700 dark:text-gray-300 truncate block cursor-default">
                     {truncated ? layer.command.slice(0, 80) + '…' : layer.command}
                   </span>
                   {truncated && (
@@ -265,13 +267,13 @@ export default function ImageDetail({ image, onBack }: ImageDetailProps) {
                   )}
                 </div>
                 <span className={`text-xs w-24 text-right pr-4 shrink-0 tabular-nums ${
-                  layer.size >= 1_048_576 ? 'font-semibold text-gray-700' : 'text-gray-400'
+                  layer.size >= 1_048_576 ? 'font-semibold text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'
                 }`}>
                   {formatLayerSize(layer.size)}
                 </span>
                 <div className="w-40 shrink-0">
                   {layer.size > 0 && (
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-blue-400 rounded-full"
                         style={{ width: `${barPct}%` }}
@@ -289,15 +291,15 @@ export default function ImageDetail({ image, onBack }: ImageDetailProps) {
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
         onConfirm={() => { setDeleteConfirmOpen(false); onBack() }}
-        title="Supprimer l'image"
+        title={t('imageDetail.deleteConfirmTitle')}
         description={
           <>
-            Voulez-vous vraiment supprimer l'image{' '}
-            <span className="font-semibold text-gray-800">{image.repository}:{image.tag}</span>{' '}
-            ? Cette action est irréversible.
+            {t('imageDetail.deleteConfirmDescBefore')}{' '}
+            <span className="font-semibold text-gray-800 dark:text-gray-200">{image.repository}:{image.tag}</span>{' '}
+            {t('imageDetail.deleteConfirmDescAfter')}
           </>
         }
-        confirmLabel="Supprimer"
+        confirmLabel={t('common.delete')}
         danger
       />
 

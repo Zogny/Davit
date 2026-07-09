@@ -11,6 +11,7 @@ import ContainerDetail from './ContainerDetail'
 import StackDetail from './StackDetail'
 import ContainerStatusBadge, { type ContainerStatus } from '../components/ContainerStatusBadge'
 import ContainerActions from '../components/ContainerActions'
+import { useTranslation } from '../i18n'
 
 interface ContainerItem {
   id: string
@@ -54,14 +55,14 @@ const MOCK_STANDALONE: ContainerItem[] = [
   { id: '7q8r9s0t', name: 'whoami', image: 'traefik/whoami:latest', status: 'stopped', ports: '8082:80', cpu: '0%', memory: '0 MB', dependsOn: [] },
 ]
 
-const COLUMNS: { key: string; label: string; sortKey?: SortableCol; width: string }[] = [
-  { key: 'name',    label: 'CONTENEUR', sortKey: 'name',   width: '18%' },
-  { key: 'image',   label: 'IMAGE',     sortKey: 'image',  width: '18%' },
-  { key: 'status',  label: 'STATUT',    sortKey: 'status', width: '12%' },
-  { key: 'ports',   label: 'PORTS',                        width: '18%' },
-  { key: 'cpu',     label: 'CPU',       sortKey: 'cpu',    width: '8%' },
-  { key: 'memory',  label: 'MÉMOIRE',   sortKey: 'memory', width: '10%' },
-  { key: 'actions', label: 'ACTIONS',                       width: '10%' },
+const COLUMNS: { key: string; labelKey: string; sortKey?: SortableCol; width: string }[] = [
+  { key: 'name',    labelKey: 'containers.colContainer', sortKey: 'name',   width: '18%' },
+  { key: 'image',   labelKey: 'containers.colImage',     sortKey: 'image',  width: '18%' },
+  { key: 'status',  labelKey: 'containers.colStatus',    sortKey: 'status', width: '12%' },
+  { key: 'ports',   labelKey: 'containers.colPorts',                        width: '18%' },
+  { key: 'cpu',     labelKey: 'containers.colCpu',       sortKey: 'cpu',    width: '8%' },
+  { key: 'memory',  labelKey: 'containers.colMemory',    sortKey: 'memory', width: '10%' },
+  { key: 'actions', labelKey: 'containers.colActions',                      width: '10%' },
 ]
 
 const STATUS_ORDER: Record<ContainerStatus, number> = { running: 0, restarting: 1, paused: 2, stopped: 3 }
@@ -101,17 +102,17 @@ function ContainerRow({ container, grouped, onSelect }: { container: ContainerIt
   return (
     <tr
       onClick={onSelect}
-      className={`hover:bg-gray-50 transition-colors cursor-pointer group/row ${container.status === 'paused' ? 'opacity-70' : ''}`}
+      className={`hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors cursor-pointer group/row ${container.status === 'paused' ? 'opacity-70' : ''}`}
     >
       <td className={`py-4 min-w-0 ${grouped ? 'pl-12 pr-4' : 'px-6'}`}>
-        <p className="text-sm font-semibold text-gray-900 group-hover/row:text-blue-600 transition-colors truncate">{container.name}</p>
-        <p className="text-xs text-gray-400 font-mono mt-0.5 truncate">{container.id}</p>
+        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover/row:text-blue-600 dark:group-hover/row:text-blue-400 transition-colors truncate">{container.name}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 font-mono mt-0.5 truncate">{container.id}</p>
       </td>
-      <td className="px-4 py-4 text-sm text-gray-700 truncate">{container.image}</td>
+      <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 truncate">{container.image}</td>
       <td className="px-4 py-4"><ContainerStatusBadge status={container.status} /></td>
-      <td className="px-4 py-4 text-sm text-gray-500 truncate">{container.ports || '—'}</td>
-      <td className="px-4 py-4 text-sm text-gray-700 tabular-nums">{container.cpu}</td>
-      <td className="px-4 py-4 text-sm text-gray-700 tabular-nums">{container.memory}</td>
+      <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400 truncate">{container.ports || '—'}</td>
+      <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 tabular-nums">{container.cpu}</td>
+      <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300 tabular-nums">{container.memory}</td>
       <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
         <ContainerActions containerId={container.id} status={container.status} inGroup={grouped} />
       </td>
@@ -120,6 +121,7 @@ function ContainerRow({ container, grouped, onSelect }: { container: ContainerIt
 }
 
 export default function Containers() {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [sortCol, setSortCol] = useState<SortableCol | null>(null)
   const [sortDir, setSortDir] = useState<SortDir | null>(null)
@@ -186,26 +188,26 @@ export default function Containers() {
     <div className="p-6 space-y-5">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Conteneurs</h1>
-        <p className="text-gray-500 mt-1 text-base">
-          {activeCount} actifs sur {totalCount} total
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('containers.title')}</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1 text-base">
+          {t('containers.subtitle', { active: activeCount, total: totalCount })}
         </p>
       </div>
 
       {/* Search bar */}
       <div className="relative max-w-lg">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" />
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Rechercher un conteneur ou une image..."
-          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder={t('containers.searchPlaceholder')}
+          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
         <table className="w-full table-fixed">
           <colgroup>
             {COLUMNS.map(col => (
@@ -213,20 +215,20 @@ export default function Containers() {
             ))}
           </colgroup>
           <thead>
-            <tr className="border-b border-gray-100">
+            <tr className="border-b border-gray-100 dark:border-gray-700">
               {COLUMNS.map(col => (
                 <th
                   key={col.key}
                   onClick={() => col.sortKey && handleSort(col.sortKey)}
                   className={`text-left px-4 py-3 first:px-6 select-none ${col.sortKey ? 'cursor-pointer group' : ''} ${col.key === 'actions' ? 'text-right' : ''}`}
                 >
-                  <span className={`inline-flex items-center gap-1.5 text-xs font-semibold text-gray-400 tracking-wider transition-colors ${col.sortKey ? 'group-hover:text-gray-600' : ''}`}>
-                    {col.label}
+                  <span className={`inline-flex items-center gap-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wider transition-colors ${col.sortKey ? 'group-hover:text-gray-600 dark:group-hover:text-gray-400' : ''}`}>
+                    {t(col.labelKey)}
                     {col.sortKey && (
                       sortCol === col.sortKey ? (
                         sortDir === 'asc'
-                          ? <ArrowUp size={12} className="text-blue-500" />
-                          : <ArrowDown size={12} className="text-blue-500" />
+                          ? <ArrowUp size={12} className="text-blue-500 dark:text-blue-400" />
+                          : <ArrowDown size={12} className="text-blue-500 dark:text-blue-400" />
                       ) : (
                         <ArrowUp size={12} className="opacity-0 group-hover:opacity-30 transition-opacity" />
                       )
@@ -236,7 +238,7 @@ export default function Containers() {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
             {visibleGroups.map(group => {
               const isCollapsed = collapsedGroups.has(group.composeProject)
               const cpuTotal = group.containers.reduce((sum, c) => sum + parseCpu(c.cpu), 0)
@@ -245,33 +247,33 @@ export default function Containers() {
                 <Fragment key={group.composeProject}>
                   <tr
                     onClick={() => setSelectedStack(group.composeProject)}
-                    className="group bg-blue-50/40 hover:bg-blue-50/70 cursor-pointer transition-colors"
+                    className="group bg-blue-50/40 dark:bg-blue-950/40 hover:bg-blue-50/70 dark:hover:bg-blue-950/60 cursor-pointer transition-colors"
                   >
                     <td colSpan={4} className="px-6 py-3">
                       <div className="flex items-center gap-2 min-w-0">
                         <button
                           onClick={e => { e.stopPropagation(); toggleGroup(group.composeProject) }}
-                          className="p-0.5 -m-0.5 rounded text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+                          className="p-0.5 -m-0.5 rounded text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors shrink-0"
                         >
                           {isCollapsed ? <ChevronRight size={15} /> : <ChevronDown size={15} />}
                         </button>
-                        <Package size={15} className="text-blue-500 shrink-0" />
-                        <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 group-hover:underline transition-colors truncate">{group.composeProject}</span>
-                        <span className="text-xs text-gray-400 shrink-0">({group.containers.length})</span>
+                        <Package size={15} className="text-blue-500 dark:text-blue-400 shrink-0" />
+                        <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:underline transition-colors truncate">{group.composeProject}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">({group.containers.length})</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 tabular-nums">{cpuTotal.toFixed(1)}%</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 tabular-nums">{formatMemory(memTotal)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 tabular-nums">{cpuTotal.toFixed(1)}%</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 tabular-nums">{formatMemory(memTotal)}</td>
                     <td className="px-6 py-3 text-right">
                       <div
                         className="flex items-center justify-end gap-2"
                         onClick={e => e.stopPropagation()}
                       >
-                        <button className="px-2.5 py-1 text-xs font-medium text-emerald-700 bg-white border border-emerald-200 rounded-md hover:bg-emerald-50 transition-colors">
-                          Démarrer tout
+                        <button className="px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-white dark:bg-gray-800 border border-emerald-200 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors">
+                          {t('containers.startAll')}
                         </button>
-                        <button className="px-2.5 py-1 text-xs font-medium text-red-600 bg-white border border-red-200 rounded-md hover:bg-red-50 transition-colors">
-                          Arrêter tout
+                        <button className="px-2.5 py-1 text-xs font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800/60 rounded-md hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors">
+                          {t('containers.stopAll')}
                         </button>
                       </div>
                     </td>
@@ -286,8 +288,8 @@ export default function Containers() {
             {visibleStandalone.length > 0 && (
               <Fragment>
                 <tr>
-                  <td colSpan={COLUMNS.length} className="px-6 py-2 bg-gray-50/60">
-                    <span className="text-xs font-semibold text-gray-400 tracking-wide uppercase">Conteneurs indépendants</span>
+                  <td colSpan={COLUMNS.length} className="px-6 py-2 bg-gray-50/60 dark:bg-gray-700/40">
+                    <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide uppercase">{t('containers.standaloneSeparator')}</span>
                   </td>
                 </tr>
                 {visibleStandalone.map(c => (

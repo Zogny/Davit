@@ -12,7 +12,7 @@ export default function Layout({ currentPage, onNavigate, children }: LayoutProp
   const [collapsed, setCollapsed] = useState(false)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-gray-950">
       <Sidebar
         currentPage={currentPage}
         onNavigate={onNavigate}

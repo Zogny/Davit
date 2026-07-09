@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { ThemeProvider } from './theme'
+import { LanguageProvider } from './i18n'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import Containers from './pages/Containers'
@@ -22,8 +24,12 @@ export default function App() {
   const PageComponent = PAGES[currentPage]
 
   return (
-    <Layout currentPage={currentPage} onNavigate={setCurrentPage}>
-      <PageComponent />
-    </Layout>
+    <ThemeProvider>
+      <LanguageProvider>
+        <Layout currentPage={currentPage} onNavigate={setCurrentPage}>
+          <PageComponent />
+        </Layout>
+      </LanguageProvider>
+    </ThemeProvider>
   )
 }

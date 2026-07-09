@@ -18,6 +18,8 @@ import {
   TrendingUp,
   Network,
 } from 'lucide-react'
+import { useTheme } from '../theme'
+import { useTranslation } from '../i18n'
 
 const CPU_HISTORY = [
   { time: '00:00', value: 42 },
@@ -40,73 +42,89 @@ const MEM_HISTORY = [
 ]
 
 export default function Dashboard() {
+  const { resolvedTheme } = useTheme()
+  const { t } = useTranslation()
+  const isDark = resolvedTheme === 'dark'
+
+  const gridStroke = isDark ? '#374151' : '#f0f0f0'
+  const axisTick = { fontSize: 11, fill: '#9ca3af' }
+  const tooltipContentStyle = {
+    borderRadius: '8px',
+    border: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
+    fontSize: '12px',
+    backgroundColor: isDark ? '#1f2937' : '#ffffff',
+    color: isDark ? '#f3f4f6' : '#111827',
+  }
+  const tooltipLabelStyle = { color: isDark ? '#d1d5db' : '#6b7280' }
+  const tooltipItemStyle = { color: isDark ? '#f3f4f6' : '#111827' }
+
   return (
     <div className="p-6 space-y-5">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 mt-1 text-base">Vue d'ensemble de votre système Docker</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.title')}</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1 text-base">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* Top stat cards */}
       <div className="grid grid-cols-4 gap-4 min-w-0">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex justify-between items-start gap-2 min-w-0">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 flex justify-between items-start gap-2 min-w-0">
           <div className="min-w-0">
-            <p className="text-xs text-gray-500 font-medium">Conteneurs actifs</p>
-            <p className="text-3xl font-bold text-blue-600 mt-1">12</p>
-            <p className="text-xs text-gray-400 mt-1">sur 15 total</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('dashboard.activeContainers')}</p>
+            <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-1">12</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{t('dashboard.ofTotal', { n: 15 })}</p>
             <div className="flex items-center gap-1 mt-2 text-xs text-emerald-500 font-medium flex-wrap">
               <TrendingUp size={12} />
-              <span>+2 vs. dernière heure</span>
+              <span>{t('dashboard.trend')}</span>
             </div>
           </div>
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 shrink-0">
-            <Container size={20} className="text-blue-600" />
+          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/40 shrink-0">
+            <Container size={20} className="text-blue-600 dark:text-blue-400" />
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex justify-between items-start gap-2 min-w-0">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 flex justify-between items-start gap-2 min-w-0">
           <div className="min-w-0">
-            <p className="text-xs text-gray-500 font-medium">CPU</p>
-            <p className="text-3xl font-bold text-purple-600 mt-1">68%</p>
-            <p className="text-xs text-gray-400 mt-1">8 cores</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('dashboard.cpu')}</p>
+            <p className="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-1">68%</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{t('dashboard.cores', { n: 8 })}</p>
           </div>
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 shrink-0">
-            <Cpu size={20} className="text-purple-600" />
+          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/40 shrink-0">
+            <Cpu size={20} className="text-purple-600 dark:text-purple-400" />
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex justify-between items-start gap-2 min-w-0">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 flex justify-between items-start gap-2 min-w-0">
           <div className="min-w-0">
-            <p className="text-xs text-gray-500 font-medium">Mémoire</p>
-            <p className="text-3xl font-bold text-green-600 mt-1">6.1 GB</p>
-            <p className="text-xs text-gray-400 mt-1">sur 16 GB</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('dashboard.memory')}</p>
+            <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">6.1 GB</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{t('dashboard.ofGB', { n: 16 })}</p>
           </div>
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-100 shrink-0">
-            <MemoryStick size={20} className="text-green-600" />
+          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/40 shrink-0">
+            <MemoryStick size={20} className="text-green-600 dark:text-green-400" />
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex justify-between items-start gap-2 min-w-0">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 flex justify-between items-start gap-2 min-w-0">
           <div className="min-w-0">
-            <p className="text-xs text-gray-500 font-medium">Disque</p>
-            <p className="text-3xl font-bold text-orange-500 mt-1">124 GB</p>
-            <p className="text-xs text-gray-400 mt-1">sur 500 GB</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('dashboard.disk')}</p>
+            <p className="text-3xl font-bold text-orange-500 dark:text-orange-400 mt-1">124 GB</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{t('dashboard.ofGB', { n: 500 })}</p>
           </div>
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-orange-100 shrink-0">
-            <HardDrive size={20} className="text-orange-500" />
+          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/40 shrink-0">
+            <HardDrive size={20} className="text-orange-500 dark:text-orange-400" />
           </div>
         </div>
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-semibold text-gray-800">Utilisation CPU</p>
-              <p className="text-xl font-bold text-gray-900 mt-0.5">68%</p>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('dashboard.cpuUsage')}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-0.5">68%</p>
             </div>
-            <Activity size={16} className="text-gray-300 mt-1 shrink-0" />
+            <Activity size={16} className="text-gray-300 dark:text-gray-600 mt-1 shrink-0" />
           </div>
           <div className="h-56 mt-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -117,15 +135,15 @@ export default function Dashboard() {
                     <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
                 <XAxis
                   dataKey="time"
-                  tick={{ fontSize: 11, fill: '#9ca3af' }}
+                  tick={axisTick}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 11, fill: '#9ca3af' }}
+                  tick={axisTick}
                   axisLine={false}
                   tickLine={false}
                   domain={[0, 80]}
@@ -133,8 +151,10 @@ export default function Dashboard() {
                   tickFormatter={(v: number) => `${v}%`}
                 />
                 <Tooltip
-                  formatter={(v) => [`${v}%`, 'CPU']}
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
+                  formatter={(v) => [`${v}%`, t('dashboard.cpu')]}
+                  contentStyle={tooltipContentStyle}
+                  labelStyle={tooltipLabelStyle}
+                  itemStyle={tooltipItemStyle}
                 />
                 <Area
                   type="monotone"
@@ -150,13 +170,13 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-semibold text-gray-800">Utilisation Mémoire</p>
-              <p className="text-xl font-bold text-gray-900 mt-0.5">6.1 GB</p>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t('dashboard.memoryUsage')}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-0.5">6.1 GB</p>
             </div>
-            <Activity size={16} className="text-gray-300 mt-1 shrink-0" />
+            <Activity size={16} className="text-gray-300 dark:text-gray-600 mt-1 shrink-0" />
           </div>
           <div className="h-56 mt-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -167,15 +187,15 @@ export default function Dashboard() {
                     <stop offset="95%" stopColor="#22c55e" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
                 <XAxis
                   dataKey="time"
-                  tick={{ fontSize: 11, fill: '#9ca3af' }}
+                  tick={axisTick}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 11, fill: '#9ca3af' }}
+                  tick={axisTick}
                   axisLine={false}
                   tickLine={false}
                   domain={[0, 8]}
@@ -183,8 +203,10 @@ export default function Dashboard() {
                   tickFormatter={(v: number) => `${v} GB`}
                 />
                 <Tooltip
-                  formatter={(v) => [`${v} GB`, 'Mémoire']}
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
+                  formatter={(v) => [`${v} GB`, t('dashboard.memory')]}
+                  contentStyle={tooltipContentStyle}
+                  labelStyle={tooltipLabelStyle}
+                  itemStyle={tooltipItemStyle}
                 />
                 <Area
                   type="monotone"
@@ -203,37 +225,37 @@ export default function Dashboard() {
 
       {/* Bottom summary cards */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 shrink-0">
-              <Layers size={18} className="text-blue-600" />
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/40 shrink-0">
+              <Layers size={18} className="text-blue-600 dark:text-blue-400" />
             </div>
-            <p className="text-sm font-medium text-gray-700">Images</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('dashboard.images')}</p>
           </div>
-          <p className="text-3xl font-bold text-gray-900">28</p>
-          <p className="text-xs text-gray-400 mt-1">45.2 GB au total</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">28</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{t('dashboard.totalSize', { size: '45.2 GB' })}</p>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 shrink-0">
-              <Database size={18} className="text-purple-600" />
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/40 shrink-0">
+              <Database size={18} className="text-purple-600 dark:text-purple-400" />
             </div>
-            <p className="text-sm font-medium text-gray-700">Volumes</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('dashboard.volumes')}</p>
           </div>
-          <p className="text-3xl font-bold text-gray-900">7</p>
-          <p className="text-xs text-gray-400 mt-1">18.5 GB au total</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">7</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{t('dashboard.totalSize', { size: '18.5 GB' })}</p>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-100 shrink-0">
-              <Network size={18} className="text-green-600" />
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/40 shrink-0">
+              <Network size={18} className="text-green-600 dark:text-green-400" />
             </div>
-            <p className="text-sm font-medium text-gray-700">Réseaux</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('dashboard.networks')}</p>
           </div>
-          <p className="text-3xl font-bold text-gray-900">5</p>
-          <p className="text-xs text-gray-400 mt-1">4 personnalisés</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">5</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{t('dashboard.customized', { n: 4 })}</p>
         </div>
       </div>
     </div>

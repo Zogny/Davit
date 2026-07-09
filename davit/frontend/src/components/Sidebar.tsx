@@ -1,18 +1,19 @@
 import { LayoutDashboard, Container, Layers, Network, Database, Settings, ChevronLeft, type LucideIcon } from 'lucide-react'
 import type { Page } from '../types'
+import { useTranslation } from '../i18n'
 
 interface NavItem {
   id: Page
-  label: string
+  labelKey: string
   icon: LucideIcon
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'containers', label: 'Conteneurs', icon: Container },
-  { id: 'images', label: 'Images', icon: Layers },
-  { id: 'networks', label: 'Réseaux', icon: Network },
-  { id: 'volumes', label: 'Volumes', icon: Database },
+  { id: 'dashboard', labelKey: 'sidebar.dashboard', icon: LayoutDashboard },
+  { id: 'containers', labelKey: 'sidebar.containers', icon: Container },
+  { id: 'images', labelKey: 'sidebar.images', icon: Layers },
+  { id: 'networks', labelKey: 'sidebar.networks', icon: Network },
+  { id: 'volumes', labelKey: 'sidebar.volumes', icon: Database },
 ]
 
 interface SidebarProps {
@@ -23,6 +24,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }: SidebarProps) {
+  const { t } = useTranslation()
   return (
     <aside
       className={[
@@ -61,8 +63,9 @@ export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }
 
       {/* Main nav */}
       <nav className={['flex flex-col gap-1 mt-2 flex-1', collapsed ? 'px-2' : 'px-4'].join(' ')}>
-        {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
+        {NAV_ITEMS.map(({ id, labelKey, icon: Icon }) => {
           const active = currentPage === id
+          const label = t(labelKey)
           return (
             <button
               key={id}
@@ -85,7 +88,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }
       <div className={collapsed ? 'px-2 pb-6' : 'px-4 pb-6'}>
         <button
           onClick={() => onNavigate('settings')}
-          title={collapsed ? 'Paramètres' : undefined}
+          title={collapsed ? t('sidebar.settings') : undefined}
           className={[
             'flex items-center w-full rounded-lg font-medium transition-colors',
             collapsed ? 'justify-center py-3' : 'gap-3 px-4 py-3 text-base text-left',
@@ -93,7 +96,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }
           ].join(' ')}
         >
           <Settings size={20} />
-          {!collapsed && 'Paramètres'}
+          {!collapsed && t('sidebar.settings')}
         </button>
       </div>
     </aside>
