@@ -27,7 +27,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }
     <aside
       className={[
         'flex flex-col shrink-0 bg-[#111827] h-full transition-all duration-200 overflow-hidden',
-        collapsed ? 'w-16' : 'w-72',
+        collapsed ? 'w-16' : 'w-64',
       ].join(' ')}
     >
       {/* Header */}
